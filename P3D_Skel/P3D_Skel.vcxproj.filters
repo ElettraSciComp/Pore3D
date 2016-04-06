@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Common">
+      <UniqueIdentifier>{11ae2409-cd21-430e-be06-b6a6e7bc0fe8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GVFSkeletonization">
+      <UniqueIdentifier>{15ad35a6-4cf1-48ba-bced-ddb85e5d3bf0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="_p3dTime.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dGVFSkeletonization.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dIterativeSkeletonPruning.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dLKCSkeletonization.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dSimpleSkeletonPruning.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dSkeletonAnalysis.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dSkeletonAnalysisFeasibility.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dSkeletonLabeling.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dThinningSkeletonization.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dUltimateSkeletonPruning.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dBoundingBoxList.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dConnectedComponentsLabeling.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dCoordsList.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dCoordsQueue.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dFCoordsList.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dSquaredEuclideanDT.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dThinning.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dUIntList.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dUtils.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="GVFSkeletonization\p3dComputeCoreSkeleton.c">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClCompile>
+    <ClCompile Include="GVFSkeletonization\p3dComputeEigenVal.c">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClCompile>
+    <ClCompile Include="GVFSkeletonization\p3dComputeHierarchicalSkeleton.c">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClCompile>
+    <ClCompile Include="GVFSkeletonization\p3dCriticalPoints.c">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClCompile>
+    <ClCompile Include="GVFSkeletonization\p3dCritPointList.c">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClCompile>
+    <ClCompile Include="GVFSkeletonization\p3dGetHighDivPoints.c">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClCompile>
+    <ClCompile Include="GVFSkeletonization\p3dGVF.c">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClCompile>
+    <ClCompile Include="GVFSkeletonization\p3dHighDivPointList.c">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common\p3dBoundingBoxList.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dBoundingBoxT.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dConnectedComponentsLabeling.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dCoordsList.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dCoordsQueue.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dCoordsT.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dFCoordsList.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dSquaredEuclideanDT.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dThinning.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dUIntList.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dUtils.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="GVFSkeletonization\p3dComputeCoreSkeleton.h">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClInclude>
+    <ClInclude Include="GVFSkeletonization\p3dComputeEigenVal.h">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClInclude>
+    <ClInclude Include="GVFSkeletonization\p3dComputeHierarchicalSkeleton.h">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClInclude>
+    <ClInclude Include="GVFSkeletonization\p3dCriticalPoints.h">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClInclude>
+    <ClInclude Include="GVFSkeletonization\p3dCritPointList.h">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClInclude>
+    <ClInclude Include="GVFSkeletonization\p3dCritPointT.h">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClInclude>
+    <ClInclude Include="GVFSkeletonization\p3dGetHighDivPoints.h">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClInclude>
+    <ClInclude Include="GVFSkeletonization\p3dGVF.h">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClInclude>
+    <ClInclude Include="GVFSkeletonization\p3dHighDivPointList.h">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClInclude>
+    <ClInclude Include="GVFSkeletonization\p3dHighDivPointT.h">
+      <Filter>Source Files\GVFSkeletonization</Filter>
+    </ClInclude>
+    <ClInclude Include="p3dSkel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="p3dTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="p3dSkel.def">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

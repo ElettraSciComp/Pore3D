@@ -1,0 +1,24 @@
+LIBRARY   P3D_BLOB
+EXPORTS
+	p3dAnisotropyAnalysis @1
+	p3dBasicAnalysis @2
+	p3dBlobAnalysis @3
+	p3dBlobLabeling_ushort @4
+	p3dBlobLabeling_uint @5
+
+	p3dChamferDT @6
+
+	p3dGetMaxVolumeBlob3D @7
+	p3dGetMinVolumeBlob3D @8
+
+	p3dMinVolumeFilter3D @9
+
+	p3dMorphometricAnalysis @10
+	p3dREVEstimation @11
+
+	p3dSquaredEuclideanDT @12
+	p3dTextureAnalysis @13
+
+	
+
+	

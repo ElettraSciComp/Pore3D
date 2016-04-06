@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Common">
+      <UniqueIdentifier>{8859cb0d-d973-4939-9d84-fe434c1225a3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="_p3dTime.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dAnisotropicDiffusionFilter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dBilateralFilter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dBoinHaibelRingRemover.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dClearBorderFilter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dCreateBinaryShapes.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dCrop.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dFrom16To8.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dGaussianFilter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dGetRegionByCoords.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dHuangYagerThresholding.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dIORaw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dJohannsenThresholding.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dKapurThresholding.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dKittlerThresholding.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dMeanFilter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dMedianFilter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dOtsuThresholding.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dPadding.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dPunThresholding.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dRidlerThresholding.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dSijbersPostnovRingRemover.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dCoordsQueue.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dRingRemoverCommon.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="p3dAuth.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="p3dFilt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="p3dTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dCoordsQueue.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dCoordsT.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dRingRemoverCommon.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="p3dFilt.def">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

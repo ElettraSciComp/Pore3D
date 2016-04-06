@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Common">
+      <UniqueIdentifier>{315102e4-f5ea-4179-833b-f6fd09f65b33}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="p3dAuth.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="p3dBlob.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="p3dTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dBoundingBoxList.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dBoundingBoxT.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dConnectedComponentsLabeling.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dCoordsList.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dCoordsQueue.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dCoordsT.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dDoubleList.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dFCoordsList.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dUIntList.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\p3dUtils.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="p3dAnisotropyAnalysis.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dBasicAnalysis.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dBlobAnalysis.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dBlobLabeling.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dChamferDT.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dGetMaxVolumeBlob.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dGetMinVolumeBlob.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dMinVolumeFilter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dMorphometricAnalysis.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dREVEstimation.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dSquaredEuclideanDT.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p3dTextureAnalysis.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_p3dTime.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dBoundingBoxList.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dConnectedComponentsLabeling_uint.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dConnectedComponentsLabeling_ushort.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dCoordsList.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dCoordsQueue.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dDoubleList.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dFCoordsList.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dUIntList.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\p3dUtils.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="p3dBlob.def">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>
