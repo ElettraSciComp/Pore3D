@@ -1,4 +1,4 @@
-CD, 'C:\Users\Franz\Documents\Visual Studio 2010\Projects\Win_Pore3D\x64\Release'
+CD, 'C:\Users\Franz\Documents\Visual Studio 2012\Projects\Pore3D\test'
 
 im = p3dReadRaw8('test_274x274x326.raw',[274,274,326])
 
