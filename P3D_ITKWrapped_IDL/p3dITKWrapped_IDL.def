@@ -1,7 +1,0 @@
-LIBRARY   P3D_ITKWRAPPED_LIB
-EXPORTS
-	IDL_Load @1
-
-	
-
-	

@@ -69,28 +69,28 @@ int customProgress(const int msg, ...) {
 }
 
 int main(int argc, char* argv[]) {
-	const int dimx = 400; //atoi(argv[3]);
-	const int dimy = 368; //atoi(argv[4]);
-	const int dimz = 360; //atoi(argv[5]);	
+	const int dimx = atoi(argv[3]);
+	const int dimy = atoi(argv[4]);
+	const int dimz = atoi(argv[5]);	
 
 	/*unsigned char* nodes_im = NULL;
 	unsigned char* ends_im = NULL;
 	unsigned char* throats_im = NULL;*/
 
 	//struct SkeletonStats skl_stats;
-	BlobStats* blob_stats;
+	//BlobStats* blob_stats;
 
 	// Allocate memory for input and output images:
 	unsigned char* in_im = (unsigned char*) malloc(dimx * dimy * dimz * sizeof (unsigned char));
 	unsigned char* out_im = (unsigned char*) malloc(dimx * dimy * dimz * sizeof (unsigned char));
 
 	//skl_stats = (SkeletonStats*) malloc(sizeof(SkeletonStats));
-	blob_stats = (BlobStats*) malloc(sizeof(BlobStats));
+	//blob_stats = (BlobStats*) malloc(sizeof(BlobStats));
 
 	//omp_set_num_threads(8);
 
 	// Read the slice:
-	p3dReadRaw8 ( "Y:\\sample_H_400x368x360_pores.raw", in_im, dimx, dimy, dimz, customPrint, NULL);
+	p3dReadRaw8 ( argv[1], in_im, dimx, dimy, dimz, customPrint, NULL);
 
 	//p3dReadRaw8(argv[1], in_im, dimx, dimy, dimz, customPrint, NULL);
 
@@ -100,11 +100,11 @@ int main(int argc, char* argv[]) {
 
 	//p3dMunchEtAlRingRemover2D_8(in_im, out_im, dimx, dimy, 991.5, 991.5, 8, 2.5, 1, 1.5, customPrint , NULL);
 	//p3dAnisotropicDiffusionFilter3D_8(in_im, out_im, dimx, dimy, dimz, 1, 0.01, 0.01, 50, customPrint, customProgress);
-	//p3dBilateralFilter3D_8(in_im, out_im, dimx, dimy, dimz, 3, 1.0, 10.0, 50, customPrint, customProgress );
+	p3dBilateralFilter3D_8(in_im, out_im, dimx, dimy, dimz, 3, 1.0, 10.0, 50, customPrint, customProgress );
 	//p3dGaussianFilter3D_8(in_im, out_im, dimx, dimy, dimz, 3, 30.0, customPrint, customProgress );
 
 	//p3dBlobLabeling_ushort(in_im, out_im, dimx, dimy, dimz, CONN6, P3D_TRUE, P3D_FALSE, customPrint);
-	p3dBlobAnalysis(in_im, blob_stats, out_im, out_im, dimx, dimy, dimz, 1.0, CONN26, 1024, P3D_TRUE, customPrint);
+	//p3dBlobAnalysis(in_im, blob_stats, out_im, out_im, dimx, dimy, dimz, 1.0, CONN26, 1024, P3D_TRUE, customPrint);
 
 
 	//p3dSkeletonAnalysis2(in_im, skl_im, &skl_stats, nodes_im, ends_im, throats_im, dimx, dimy, dimz, 0.00298, customPrint);
@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
 
 
 	//p3dWriteRaw16(out_im, argv[2], dimx, dimy, dimz, P3D_TRUE, P3D_FALSE, customPrint, NULL);
-	//__p3dWriteRaw8(out_im, "/home/francesco.brun/Pore3D/co010b_17_400x400x300.raw_flt", dimx, dimy, dimz);
+	p3dWriteRaw8(out_im, argv[2], dimx, dimy, dimz);
 
 
 	// Release resources:	
