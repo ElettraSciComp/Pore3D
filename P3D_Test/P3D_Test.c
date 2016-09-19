@@ -11,6 +11,7 @@ int customPrint_nolf(const char *msg, ...) {
 	va_list fmtargs;
 	char buffer[1024];
 	
+	
 	//FILE *foutVF;
 
 	va_start(fmtargs, msg);
