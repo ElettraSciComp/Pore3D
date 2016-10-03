@@ -10,8 +10,6 @@ EXPORTS
 	p3dThinningSkeletonization @8
 	p3dUltimateSkeletonPruning @9
 
-	p3dSkeletonAnalysis_2 @10
-
 
 	
 

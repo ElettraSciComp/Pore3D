@@ -15,7 +15,6 @@ static IDL_MEMINT Skel_tags_node2node_dims[IDL_MAX_ARRAY_DIM];
 static IDL_MEMINT Skel_tags_node2end_dims[IDL_MAX_ARRAY_DIM];
 static IDL_MEMINT Skel_tags_end2end_dims[IDL_MAX_ARRAY_DIM];
 static IDL_MEMINT Skel_tags_coordinationnumber_dims[IDL_MAX_ARRAY_DIM];
-static IDL_MEMINT Skel_tags_tortuosity_dims[IDL_MAX_ARRAY_DIM];
 
 // NOTE: Order is crucial in reference to the C structure and 
 // names should be in upper case format and alphabetical:
@@ -42,9 +41,6 @@ static IDL_STRUCT_TAG_DEF SkelStats_tags[] = {
     { "PORES_COUNT", 0, (void *) IDL_TYP_UINT},
     { "PORES_WIDTH", Skel_tags_node_dims, (void *) IDL_TYP_DOUBLE},
     { "TORTUOSITY_COUNT", 0, (void *) IDL_TYP_UINT},
-    { "TORTUOSITY_X", Skel_tags_tortuosity_dims, (void *) IDL_TYP_DOUBLE},
-    { "TORTUOSITY_Y", Skel_tags_tortuosity_dims, (void *) IDL_TYP_DOUBLE},     
-    { "TORTUOSITY_Z", Skel_tags_tortuosity_dims, (void *) IDL_TYP_DOUBLE},
     { 0 }
 };
 
@@ -66,8 +62,6 @@ IDL_VPTR p3d_idlSkeletonAnalysis(int argc, IDL_VPTR argv[], char* argk) {
         IDL_VPTR idl_nodes_im;
         IDL_VPTR idl_pores_im;
         IDL_VPTR idl_throats_im;
-        int tortuosity_depth;
-        int tort_there;
         double resolution;
         int rs_there;
     } KW_RESULT;
@@ -80,7 +74,6 @@ IDL_VPTR p3d_idlSkeletonAnalysis(int argc, IDL_VPTR argv[], char* argk) {
         { "NODES_IM", IDL_TYP_UNDEF, 1, IDL_KW_OUT | IDL_KW_ZERO, 0, (char*) IDL_KW_OFFSETOF(idl_nodes_im)},
         { "PORES_IM", IDL_TYP_UNDEF, 1, IDL_KW_OUT | IDL_KW_ZERO, 0, (char*) IDL_KW_OFFSETOF(idl_pores_im)},        
         { "THROATS_IM", IDL_TYP_UNDEF, 1, IDL_KW_OUT | IDL_KW_ZERO, 0, (char*) IDL_KW_OFFSETOF(idl_throats_im)},
-        { "TORTUOSITY_DEPTH", IDL_TYP_LONG, 1, 0, (int*) IDL_KW_OFFSETOF(tort_there), (char*) IDL_KW_OFFSETOF(tortuosity_depth)},
         { "VOXELSIZE", IDL_TYP_DOUBLE, 1, 0, (int*) IDL_KW_OFFSETOF(rs_there), (char*) IDL_KW_OFFSETOF(resolution)},
         { NULL}
     };
@@ -103,7 +96,6 @@ IDL_VPTR p3d_idlSkeletonAnalysis(int argc, IDL_VPTR argv[], char* argk) {
 
     double merging_factor = 0.85; // default value
     double resolution = 1.0; // default value
-    int tortuosity_depth = 3; //defaul value
     
     int err_code;
     void* s;
@@ -138,9 +130,6 @@ IDL_VPTR p3d_idlSkeletonAnalysis(int argc, IDL_VPTR argv[], char* argk) {
     stats.NodeToNode_MaxWidth = NULL;
 
     stats.CoordinationNumber = NULL;
-    stats.Tort_X = NULL;
-    stats.Tort_Y = NULL;
-    stats.Tort_Z = NULL;
 
     // Get input data in IDL format:
     idl_in_rev = argv[0];
@@ -184,20 +173,7 @@ IDL_VPTR p3d_idlSkeletonAnalysis(int argc, IDL_VPTR argv[], char* argk) {
         merging_factor = (double) kw.merging_factor;
 
         keywords_ct++;
-    }
-    
-    // Get the TORTUOSITY DEPTH input keyword:
-    if (kw.tort_there) {
-        // Check values:
-        if ( (kw.tortuosity_depth < 1) || (kw.tortuosity_depth > 10) )
-            _p3d_idlPrintNamedError("TORTUOSITY_DEPTH must be an integer value in the range [1,10]");
-
-        // Get value:
-        tortuosity_depth = (int) kw.tortuosity_depth;
-
-        keywords_ct++;
-    }
-    
+    }  
     
     // Get the RESOLUTION input keyword:
     if (kw.rs_there) {
@@ -316,7 +292,6 @@ IDL_VPTR p3d_idlSkeletonAnalysis(int argc, IDL_VPTR argv[], char* argk) {
                 idl_in_rev->value.arr->dim[1],
                 idl_in_rev->value.arr->dim[2],
                 merging_factor, 
-                tortuosity_depth,
                 resolution,
                 _p3d_idlPrintInfo
                 );
@@ -350,11 +325,6 @@ IDL_VPTR p3d_idlSkeletonAnalysis(int argc, IDL_VPTR argv[], char* argk) {
     Skel_tags_coordinationnumber_dims[1] = (IDL_MEMINT) stats.Node_Counter; 
     for (i = 2; i < IDL_MAX_ARRAY_DIM; i++)
         Skel_tags_coordinationnumber_dims[i] = 0;    
-   
-    Skel_tags_tortuosity_dims[0] = 1;
-    Skel_tags_tortuosity_dims[1] = (IDL_MEMINT) stats.Tort_Counter;     
-    for (i = 2; i < IDL_MAX_ARRAY_DIM; i++)
-        Skel_tags_tortuosity_dims[i] = 0;
 
     Skel_tags_node2end_dims[0] = 1;
     Skel_tags_node2end_dims[1] = (IDL_MEMINT) stats.NodeToEnd_Counter;
@@ -383,27 +353,8 @@ IDL_VPTR p3d_idlSkeletonAnalysis(int argc, IDL_VPTR argv[], char* argk) {
     i_tmp_ptr = (int *) (s_data + offset);
     for (i = 0; i < stats.Node_Counter; i++)
         *(i_tmp_ptr++) = stats.CoordinationNumber[i];
-    
-    offset = IDL_StructTagInfoByName(s, "TORTUOSITY_COUNT", IDL_MSG_LONGJMP, NULL);
-    us_tmp_ptr = (unsigned short *) (s_data + offset);
-    *(us_tmp_ptr++) = stats.Tort_Counter; 
-    
-  
-    offset = IDL_StructTagInfoByName(s, "TORTUOSITY_X", IDL_MSG_LONGJMP, NULL);
-    d_tmp_ptr = (double *) (s_data + offset);
-    for (i = 0; i < stats.Tort_Counter; i++)
-        *(d_tmp_ptr++) = stats.Tort_X[i];
-    
-    offset = IDL_StructTagInfoByName(s, "TORTUOSITY_Y", IDL_MSG_LONGJMP, NULL);
-    d_tmp_ptr = (double *) (s_data + offset);
-    for (i = 0; i < stats.Tort_Counter; i++)
-        *(d_tmp_ptr++) = stats.Tort_Y[i];
-    
-    offset = IDL_StructTagInfoByName(s, "TORTUOSITY_Z", IDL_MSG_LONGJMP, NULL);
-    d_tmp_ptr = (double *) (s_data + offset);
-    for (i = 0; i < stats.Tort_Counter; i++)
-        *(d_tmp_ptr++) = stats.Tort_Z[i];
-    
+
+
     offset = IDL_StructTagInfoByName(s, "ENDPOINTS_COUNT", IDL_MSG_LONGJMP, NULL);
     us_tmp_ptr = (unsigned short *) (s_data + offset);
     *(us_tmp_ptr++) = stats.End_Counter;
@@ -528,10 +479,6 @@ IDL_VPTR p3d_idlSkeletonAnalysis(int argc, IDL_VPTR argv[], char* argk) {
     if (stats.NodeToNode_MaxWidth != NULL) free(stats.NodeToNode_MaxWidth);
 
     if (stats.CoordinationNumber != NULL) free(stats.CoordinationNumber);
-    
-    if (stats.Tort_X != NULL) free(stats.Tort_X);
-    if (stats.Tort_Y != NULL) free(stats.Tort_Y);
-    if (stats.Tort_Z != NULL) free(stats.Tort_Z);
 
     // Release keyword resources:
     IDL_KW_FREE;

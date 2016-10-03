@@ -40,7 +40,6 @@ int IDL_Load(void)
 		{ (IDL_FUN_RET) p3d_idlLKCSkeletonization, "P3DLKCSKELETONIZATION", 1, 1, 0, 0 },
 		{ (IDL_FUN_RET) p3d_idlPKSkeletonization, "P3DPKSKELETONIZATION", 1, 1, 0, 0 },	
 		{ (IDL_FUN_RET) p3d_idlSkeletonAnalysis, "P3DSKELETONANALYSIS", 2, 2, IDL_SYSFUN_DEF_F_KEYWORDS, 0 },
-		{ (IDL_FUN_RET) p3d_idlSkeletonAnalysis_2, "P3DSKELETONANALYSIS_2", 2, 2, IDL_SYSFUN_DEF_F_KEYWORDS, 0 },
 		{ (IDL_FUN_RET) p3d_idlSkeletonAnalysisFeasibility, "P3DSKELETONANALYSISFEASIBILITY", 2, 2, 0, 0 },
         { (IDL_FUN_RET) p3d_idlSkeletonLabeling, "P3DSKELETONLABELING", 1, 1, 0, 0 },
 		{ (IDL_FUN_RET) p3d_idlSkeletonPruning, "P3DSKELETONPRUNING", 1, 1, IDL_SYSFUN_DEF_F_KEYWORDS, 0 },		

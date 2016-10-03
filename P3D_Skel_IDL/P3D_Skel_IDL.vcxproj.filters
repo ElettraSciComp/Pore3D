@@ -42,9 +42,6 @@
     <ClCompile Include="p3d_idlSkeletonPruning.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="p3d_idlSkeletonAnalysis_2.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_p3d_idlCommon.h">
