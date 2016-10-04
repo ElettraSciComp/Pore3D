@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5121D710-C383-4BD3-A5AD-F0A0DF556F85}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Win_Pore3D</RootNamespace>
+    <RootNamespace>P3DFIlt</RootNamespace>
     <ProjectName>P3DFilt</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{84B5072B-7FAC-47A2-88C0-B0A105E6DD5C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>P3D_Filt_IDL</RootNamespace>
+    <RootNamespace>P3DFilt_IDL</RootNamespace>
     <ProjectName>P3DFilt_IDL</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -173,7 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="p3dFilt_IDL.def" />
-    <None Include="P3D_Filt_IDL.dlm" />
+    <None Include="P3DFilt_IDL.dlm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

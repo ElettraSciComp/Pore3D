@@ -1,4 +1,4 @@
-LIBRARY   P3D_SKEL
+LIBRARY   P3DSKEL
 EXPORTS
 	p3dGVFSkeletonization @1
 	p3dIterativeSkeletonPruning @2

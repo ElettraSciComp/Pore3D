@@ -64,10 +64,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="P3D_Blob_IDL.dlm">
+    <None Include="p3dBlob_IDL.def">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="p3dBlob_IDL.def">
+    <None Include="P3DBlob_IDL.dlm">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

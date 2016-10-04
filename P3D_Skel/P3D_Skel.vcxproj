@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{06F2DAD8-ACD6-47B4-B986-62CF17C82759}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>P3D_Skel</RootNamespace>
+    <RootNamespace>P3DSkel</RootNamespace>
     <ProjectName>P3DSkel</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

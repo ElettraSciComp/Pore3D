@@ -52,10 +52,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="P3D_Skel_IDL.dlm">
+    <None Include="p3dSkel_IDL.def">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="p3dSkel_IDL.def">
+    <None Include="P3DSkel_IDL.dlm">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

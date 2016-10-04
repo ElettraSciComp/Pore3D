@@ -1,4 +1,4 @@
-LIBRARY   P3D_FILT
+LIBRARY   P3DFILT
 EXPORTS
 	p3dAnisotropicDiffusionFilter3D_8  @1
 	p3dAnisotropicDiffusionFilter3D_16   @2

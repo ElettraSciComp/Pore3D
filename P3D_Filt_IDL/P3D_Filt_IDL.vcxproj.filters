@@ -82,10 +82,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="P3D_Filt_IDL.dlm">
+    <None Include="p3dFilt_IDL.def">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="p3dFilt_IDL.def">
+    <None Include="P3DFilt_IDL.dlm">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

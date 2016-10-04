@@ -1,4 +1,4 @@
-LIBRARY   P3D_BLOB
+LIBRARY   P3DBLOB
 EXPORTS
 	p3dAnisotropyAnalysis @1
 	p3dBasicAnalysis @2

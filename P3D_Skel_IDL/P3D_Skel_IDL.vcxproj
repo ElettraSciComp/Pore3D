@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6EF81177-F0A2-43E8-9A48-6A5039D07C0C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>P3D_Skel_IDL</RootNamespace>
+    <RootNamespace>P3DSkel_IDL</RootNamespace>
     <ProjectName>P3DSkel_IDL</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -164,7 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="p3dSkel_IDL.def" />
-    <None Include="P3D_Skel_IDL.dlm" />
+    <None Include="P3DSkel_IDL.dlm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

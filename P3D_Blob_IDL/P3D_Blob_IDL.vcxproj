@@ -175,7 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="p3dBlob_IDL.def" />
-    <None Include="P3D_Blob_IDL.dlm" />
+    <None Include="P3DBlob_IDL.dlm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
