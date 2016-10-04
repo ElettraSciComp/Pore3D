@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BE2ED2DD-1421-436A-9803-163E16691CEC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>P3D_Blob</RootNamespace>
+    <RootNamespace>P3DBlob</RootNamespace>
     <ProjectName>P3DBlob</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -155,7 +155,6 @@
     <ClInclude Include="Common\p3dFCoordsList.h" />
     <ClInclude Include="Common\p3dUIntList.h" />
     <ClInclude Include="Common\p3dUtils.h" />
-    <ClInclude Include="p3dAuth.h" />
     <ClInclude Include="p3dBlob.h" />
     <ClInclude Include="p3dTime.h" />
   </ItemGroup>

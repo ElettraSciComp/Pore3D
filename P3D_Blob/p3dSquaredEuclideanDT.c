@@ -1,3 +1,30 @@
+/***************************************************************************/
+/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
+/*                                                                         */
+/*                                                                         */
+/* This file is part of Pore3D, a software library for quantitative        */
+/* analysis of 3D (volume) images.                                         */
+/*                                                                         */
+/* Pore3D is free software: you can redistribute it and/or modify it       */
+/* under the terms of the GNU General Public License as published by the   */
+/* Free Software Foundation, either version 3 of the License, or (at your  */
+/* option) any later version.                                              */
+/*                                                                         */
+/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
+/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
+/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
+/* for more details.                                                       */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
+/*                                                                         */
+/***************************************************************************/
+
+//
+// Author: Francesco Brun
+// Last modified: Sept, 28th 2016
+//
+
 /* 
  * p3dSquaredEuclideanDistanceTransform  
  * 
@@ -24,13 +51,6 @@
  * Mathematical Morphology and its Applications to Image and Signal 
  * Processing, pp. 331-340. Kluwer, 2000.
  *
-
- * 
- * Copyright 2008, SYRMEP Group - Sincrotrone Trieste S.C.p.A.
- *
- * Author:	Brun Francesco
- * Version:	1.0
- * Date:		19 june 2008
  *
  */
 #include <omp.h>
@@ -47,7 +67,6 @@
 
 #include "p3dBlob.h"
 #include "p3dTime.h"
-#include "p3dAuth.h"
 
 
 // Set a signed integer type able to get over 65.535 and the 

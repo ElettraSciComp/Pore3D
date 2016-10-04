@@ -92,9 +92,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="p3dAuth.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="p3dFilt.h">
       <Filter>Header Files</Filter>
     </ClInclude>

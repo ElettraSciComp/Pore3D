@@ -180,7 +180,6 @@
     <ClInclude Include="Common\p3dCoordsQueue.h" />
     <ClInclude Include="Common\p3dCoordsT.h" />
     <ClInclude Include="Common\p3dRingRemoverCommon.h" />
-    <ClInclude Include="p3dAuth.h" />
     <ClInclude Include="p3dFilt.h" />
     <ClInclude Include="p3dTime.h" />
   </ItemGroup>

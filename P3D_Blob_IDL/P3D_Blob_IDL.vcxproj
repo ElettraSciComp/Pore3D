@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{563C477F-889A-44E7-A746-F033BF2B567F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>P3D_Blob_IDL</RootNamespace>
+    <RootNamespace>P3DBlob_IDL</RootNamespace>
     <ProjectName>P3DBlob_IDL</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
