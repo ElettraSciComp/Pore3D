@@ -98,12 +98,12 @@ extern "C" {
     int p3dReplicatePadding3D_8(unsigned char*, unsigned char*, const int, const int, const int, const int, int (*wr_log)(const char*, ...), int (*wr_progress)(const int, ...));
     int p3dReplicatePadding3D_16(unsigned short*, unsigned short*, const int, const int, const int, const int, int (*wr_log)(const char*, ...), int (*wr_progress)(const int, ...));
 
-    int p3dFrom16To8_batch (char*, char*, const int, const int, const int, const int, const int, const int, int (*wr_log)(const char*, ...),  int (*wr_progress)(const int, ...), int );
+    /*int p3dFrom16To8_batch (char*, char*, const int, const int, const int, const int, const int, const int, int (*wr_log)(const char*, ...),  int (*wr_progress)(const int, ...), int );
     
     int p3dTIFFToRaw_batch (char*, char*, int (*wr_log)(const char*, ...), int (*wr_progress)(const int, ...), int );
     
     int p3dRaw16ToTIFF_batch (char*, char*, const int, const int, const int, const int, int (*wr_log)(const char*, ...), int (*wr_progress)(const int, ...), int );
-    int p3dRaw8ToTIFF_batch (char*, char*, const int, const int, int (*wr_log)(const char*, ...), int (*wr_progress)(const int, ...), int );
+    int p3dRaw8ToTIFF_batch (char*, char*, const int, const int, int (*wr_log)(const char*, ...), int (*wr_progress)(const int, ...), int );*/
     
     // Basic Filters:
     int p3dAnisotropicDiffusionFilter3D_8(unsigned char*, unsigned char*, const int, const int, const int, const int, const double, const double, const int, int (*wr_log)(const char*, ...), int (*wr_progress)(const int, ...));
