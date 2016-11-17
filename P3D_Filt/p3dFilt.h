@@ -22,7 +22,7 @@
 
 //
 // Author: Francesco Brun
-// Last modified: Sept, 28th 2016
+// Last modified: September, 28th 2016
 //
 
 #ifdef __cplusplus
