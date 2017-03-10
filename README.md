@@ -14,7 +14,7 @@ If you use this software please cite: F. Brun et al., Pore3D: A software library
 
 Binaries for Windows 64-bit are provided. The .zip file can be downloaded from the Releases section of this GitHub repository (https://github.com/ElettraSciComp/Pore3D/releases/).
 
-Decompress the .zip file and make the extracted .dll and .dlm files visible to [IDL](http://www.harrisgeospatial.com/ProductsandSolutions/GeospatialProducts/IDL.aspx). The simplest way for this is to copy the Pore3D files into an internal IDL folder similar to C:\Program Files\ITT\IDL70\bin\bin.x86_64 . 
+Decompress the .zip file and make the extracted .dll and .dlm files visible to [IDL](http://www.harrisgeospatial.com/ProductsandSolutions/GeospatialProducts/IDL.aspx). The simplest way for this is to copy the Pore3D files into an internal IDL folder similar to C:\Program Files\Exelis\IDL85\bin\bin.x86_64 . 
 
 ## Documentation
 
