@@ -4,7 +4,7 @@ Pore3D is a software toolbox for quantitative analysis of three-dimensional imag
 
 The core of Pore3D consists in a set of state-of-the-art functions and procedures for performing filtering, segmentation, skeletonization and quantitative analysis of three-dimensional data. Although three-dimensional data can be produced by several techniques (for instance: magnetic resonance, x-ray scattering or confocal microscopy), the library was developed and optimized for micro-CT (Computed Tomography) data.
 
-Pore3D features are available through the high-level scripting environment [IDL](http://www.harrisgeospatial.com/ProductsandSolutions/GeospatialProducts/IDL.aspx). Pore3D has been tested with IDL 64-bit from versions 6.4 to 8.1.
+Pore3D features are available through the high-level scripting environment [IDL](http://www.harrisgeospatial.com/ProductsandSolutions/GeospatialProducts/IDL.aspx). Pore3D has been tested with IDL 64-bit from versions 6.4 to 8.5.
 
 ## References
 
