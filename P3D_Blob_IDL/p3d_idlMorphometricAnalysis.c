@@ -1,30 +1,3 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
-
 // From C library:
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,12 +13,12 @@
 // names should be in upper case format and alphabetical:
 static IDL_STRUCT_TAG_DEF MorphStats_tags[] = {
     //{ "FRI", 0, (void *) IDL_TYP_DOUBLE },     
-    { "BSBV", 0, (void *) IDL_TYP_DOUBLE},
-    { "BVTV", 0, (void *) IDL_TYP_DOUBLE},
-    { "TBN", 0, (void *) IDL_TYP_DOUBLE},
-    { "TBSP", 0, (void *) IDL_TYP_DOUBLE},
-    { "TBTH", 0, (void *) IDL_TYP_DOUBLE},
-    { 0}
+    { "BSBV", 0, (void *) IDL_TYP_DOUBLE },
+    { "BVTV", 0, (void *) IDL_TYP_DOUBLE },
+    { "TBN", 0, (void *) IDL_TYP_DOUBLE },
+    { "TBSP", 0, (void *) IDL_TYP_DOUBLE },
+    { "TBTH", 0, (void *) IDL_TYP_DOUBLE },
+    { 0 }
 };
 
 IDL_VPTR p3d_idlMorphometricAnalysis(int argc, IDL_VPTR argv[], char* argk) {
@@ -68,7 +41,7 @@ IDL_VPTR p3d_idlMorphometricAnalysis(int argc, IDL_VPTR argv[], char* argk) {
     // IDL array input and IDL struct output:
     IDL_VPTR idl_in_rev, idl_out_struct, idl_mask;
     unsigned char *in_rev, *mask;
-    struct MorphometricStats stats;
+    MorphometricStats stats;
     //MorphometricStats *stats = (MorphometricStats*) malloc(sizeof (MorphometricStats));
     int keywords_ct = 0;
 
@@ -80,7 +53,7 @@ IDL_VPTR p3d_idlMorphometricAnalysis(int argc, IDL_VPTR argv[], char* argk) {
     double resolution = 1.0; // default value
 
     int err_code;
-    void* s;
+    IDL_StructDefPtr s;
 
     // Get input data in IDL format:
     idl_in_rev = argv[0];
@@ -164,7 +137,7 @@ IDL_VPTR p3d_idlMorphometricAnalysis(int argc, IDL_VPTR argv[], char* argk) {
         }
 
 
-        if (err_code == P3D_MEM_ERROR) {
+        if (err_code == P3D_ERROR) {
             // Print error:
             _p3d_idlPrintNamedError("Error on internal code execution.");
         }

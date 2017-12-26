@@ -1,30 +1,3 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
-
 // From C library:
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,7 +19,7 @@ IDL_VPTR p3d_idlGetRegionByCoords(int argc, IDL_VPTR argv[], char* argk)
         IDL_MEMINT cen_n;  
     } KW_RESULT;  
  
-    static IDL_KW_ARR_DESC_R center = { (char*) IDL_KW_OFFSETOF(cen_data), 2, 3, (IDL_LONG*) IDL_KW_OFFSETOF(cen_n) };
+    static IDL_KW_ARR_DESC_R center = { (char*) IDL_KW_OFFSETOF(cen_data), 2, 3, (IDL_MEMINT*) IDL_KW_OFFSETOF(cen_n) };
  
   
     // Alphabetical order is crucial:
@@ -85,19 +58,7 @@ IDL_VPTR p3d_idlGetRegionByCoords(int argc, IDL_VPTR argv[], char* argk)
     // Get the CONN input argument:
     if (kw.cn_there)
     {
-        /*if ( idl_in_rev->value.arr->n_dim == 2 )
-        {
-            // Check values:
-            if ( ( kw.conn != 4 ) && ( kw.conn != 8) )
-                _p3d_idlPrintNamedError("CONN must be a value of the set {4,8}.");
-             
-            // Get values:
-            if ( kw.conn == 4 )
-                conn2D = CONN4;
-            else if ( kw.conn == 8 )
-                conn2D = CONN8;
-        }
-        else **/if ( idl_in_rev->value.arr->n_dim == 3 )
+        if ( idl_in_rev->value.arr->n_dim == 3 )
         {
             // Check values:
             if ( ( kw.conn != 6 ) && ( kw.conn != 18 ) && ( kw.conn != 26 ) )
@@ -120,19 +81,7 @@ IDL_VPTR p3d_idlGetRegionByCoords(int argc, IDL_VPTR argv[], char* argk)
     if (kw.cen_there)
     {
         // Check values:
-        /*if (kw.cen_n == 2)
-        {
-            if ( ( kw.cen_data[0] < 0 ) || ( kw.cen_data[0] > idl_in_rev->value.arr->dim[0] ) )
-                _p3d_idlPrintNamedError("X value of input argument COORDS must be within IMAGE dimensions.");
- 
-            if ( ( kw.cen_data[1] < 0 ) || ( kw.cen_data[1] > idl_in_rev->value.arr->dim[1] ) )
-                _p3d_idlPrintNamedError("Y value of input argument COORDS must be within IMAGE dimensions.");
- 
-            // Get values:
-            centerX = (unsigned int) kw.cen_data[0];
-            centerY = (unsigned int) kw.cen_data[1];
-        }
-        else */if (kw.cen_n == 3)
+		if (kw.cen_n == 3)
         {
             if ( ( kw.cen_data[0] < 0 ) || ( kw.cen_data[0] > idl_in_rev->value.arr->dim[0] ) )
                 _p3d_idlPrintNamedError("X value of input argument COORDS must be within IMAGE dimensions.");
@@ -157,13 +106,7 @@ IDL_VPTR p3d_idlGetRegionByCoords(int argc, IDL_VPTR argv[], char* argk)
     }
     else
     {
-        /*if ( idl_in_rev->value.arr->n_dim == 2 )
-        {
-            // Set default values for centerX and centerY:
-            centerX = (unsigned int) idl_in_rev->value.arr->dim[0] / 2;
-            centerY = (unsigned int) idl_in_rev->value.arr->dim[1] / 2;
-        }
-        else*/ if ( idl_in_rev->value.arr->n_dim == 3 )
+        if ( idl_in_rev->value.arr->n_dim == 3 )
         {
             // Set default values for centerX, centerY and centerZ:
             centerX = (unsigned int) idl_in_rev->value.arr->dim[0] / 2;
@@ -175,46 +118,7 @@ IDL_VPTR p3d_idlGetRegionByCoords(int argc, IDL_VPTR argv[], char* argk)
  
  
     // Call Pore3D depending on input arguments:
-    /*if ( idl_in_rev->value.arr->n_dim == 2 )
-    {     
-        // Extract first input (volume to filter) in C format:
-        if (idl_in_rev->type == IDL_TYP_BYTE)             
-        {
-            in_rev8 = (unsigned char *) idl_in_rev->value.arr->data;  
- 
-            // Allocate memory for output:
-            if (!(idl_in_rev->flags & IDL_V_TEMP))  
-                out_rev8 = (unsigned char *) IDL_MakeTempArray(
-                    IDL_TYP_BYTE,
-                    idl_in_rev->value.arr->n_dim,  
-                    idl_in_rev->value.arr->dim,  
-                    IDL_ARR_INI_NOP, 
-                    &idl_out_rev
-                    );  
- 
- 
-            // Call Pore3D:
-            err_code = p3dGetRegionByCoords2D ( 
-                in_rev8,
-                out_rev8,
-                (unsigned int) idl_in_rev->value.arr->dim[0],
-                (unsigned int) idl_in_rev->value.arr->dim[1],
-                centerX,
-                centerY,
-                conn2D,
-                _p3d_idlPrintInfo
-            );
- 
-            // On exception print error:
-            if (err_code == P3D_MEM_ERROR)
-                _p3d_idlPrintNamedError("Error on code execution.");  
-        }         
-        else
-        {
-            _p3d_idlPrintNamedError("Input argument IMAGE must be of type BYTE.");
-        }         
-    }
-    else */if ( idl_in_rev->value.arr->n_dim == 3 )
+	if ( idl_in_rev->value.arr->n_dim == 3 )
     {
         // Extract first input (volume to filter) in C format:
         if (idl_in_rev->type == IDL_TYP_BYTE)             
@@ -247,7 +151,7 @@ IDL_VPTR p3d_idlGetRegionByCoords(int argc, IDL_VPTR argv[], char* argk)
             );     
  
             // On exception print error:
-            if (err_code == P3D_MEM_ERROR)
+            if (err_code == P3D_ERROR)
                 _p3d_idlPrintNamedError("Error on code execution."); 
         }         
         else

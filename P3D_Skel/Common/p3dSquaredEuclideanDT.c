@@ -302,7 +302,7 @@ MEM_ERROR:
     if ( t != NULL ) free(t);
 
 	// Return error code:
-	return P3D_MEM_ERROR;
+	return P3D_ERROR;
 }
 
 /** 
@@ -390,7 +390,7 @@ MEM_ERROR:
     if ( t != NULL ) free(t);
 
 	// Return error code:
-	return P3D_MEM_ERROR;
+	return P3D_ERROR;
 }
 
 
@@ -443,6 +443,6 @@ MEM_ERROR:
 	if ( tmp_out_rev != NULL ) free(tmp_out_rev);
 
 	// Return error:
-	return P3D_MEM_ERROR;
+	return P3D_ERROR;
 }
 

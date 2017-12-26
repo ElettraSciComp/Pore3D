@@ -1,7 +1,7 @@
 LIBRARY   P3DFILT
 EXPORTS
 	p3dAnisotropicDiffusionFilter3D_8  @1
-	p3dAnisotropicDiffusionFilter3D_16   @2
+	p3dAnisotropicDiffusionFilter3D_16  @2
 	
 	p3dBilateralFilter3D_8    @3
 	p3dBilateralFilter3D_16   @4
@@ -11,71 +11,68 @@ EXPORTS
 	p3dWriteRaw8   @7
 	p3dWriteRaw16  @8
 	p3dWriteRaw32  @9
+	p3dWriteRaw32f  @10
 
-	p3dBoinHaibelRingRemover2D_8    @10
-	p3dBoinHaibelRingRemover2D_16   @11
+	p3dBoinHaibelRingRemover2D_8    @11
+	p3dBoinHaibelRingRemover2D_16   @12
 
-	p3dClearBorderFilter3D  @12
+	p3dClearBorderFilter3D  @13
 
-	p3dCreateBinaryCircle   @13
-	p3dCreateBinaryCylinder  @14
-	p3dCreateBinarySphere  @15
+	p3dCreateBinaryCircle   @14
+	p3dCreateBinaryCylinder  @15
+	p3dCreateBinarySphere  @16
 
-	p3dCrop2D_8   @16
-	p3dCrop2D_16   @17
-	p3dCrop3D_8   @18
-	p3dCrop3D_16   @19
+	p3dCrop2D_8   @17
+	p3dCrop2D_16   @18
+	p3dCrop3D_8   @19
+	p3dCrop3D_16   @20
 
-	p3dFrom16To8 @20
+	p3dFrom16To8 @21
 
-	p3dGaussianFilter3D_8   @21
-	p3dGaussianFilter3D_16  @22
+	p3dGaussianFilter3D_8   @22
+	p3dGaussianFilter3D_16  @23
 
-	p3dGetRegionByCoords3D  @23
+	p3dGetRegionByCoords3D  @24
 
-	p3dHuangYagerThresholding_8    @24
-	p3dHuangYagerThresholding_16   @25
+	p3dHuangYagerThresholding_8    @25
+	p3dHuangYagerThresholding_16   @26
 
-	p3dJohannsenThresholding_8    @26
-	p3dJohannsenThresholding_16    @27
+	p3dJohannsenThresholding_8    @27
+	p3dJohannsenThresholding_16    @28
 
-	p3dKapurThresholding_8      @28
-	p3dKapurThresholding_16      @29
+	p3dKapurThresholding_8      @29
+	p3dKapurThresholding_16      @30
 
-	p3dKittlerThresholding_8      @30
-	p3dKittlerThresholding_16      @31
+	p3dKittlerThresholding_8      @31
+	p3dKittlerThresholding_16      @32
 
-	p3dMeanFilter2D_8   @32
-	p3dMeanFilter2D_16   @33
-	p3dMeanFilter3D_8   @34
-	p3dMeanFilter3D_16   @35
+	p3dMeanFilter3D_8   @33
+	p3dMeanFilter3D_16   @34
 
-	p3dMedianFilter2D_8   @36
-	p3dMedianFilter2D_16   @37
-	p3dMedianFilter3D_8   @38
-	p3dMedianFilter3D_16   @39
+	p3dMedianFilter3D_8   @35
+	p3dMedianFilter3D_16   @36
 
-	p3dOtsuThresholding_8  @40
-	p3dOtsuThresholding_16 @41
+	p3dOtsuThresholding_8  @37
+	p3dOtsuThresholding_16 @38
 
-	p3dZeroPadding2D_8   @42
-	p3dZeroPadding2D_16   @43
-	p3dZeroPadding3D_8   @44
-	p3dZeroPadding3D_16   @45
+	p3dZeroPadding2D_8   @39
+	p3dZeroPadding2D_16   @40
+	p3dZeroPadding3D_8   @41
+	p3dZeroPadding3D_16   @42
 
-	p3dReplicatePadding2D_8   @46
-	p3dReplicatePadding2D_16   @47
-	p3dReplicatePadding3D_8   @48
-	p3dReplicatePadding3D_16   @49
+	p3dReplicatePadding2D_8   @43
+	p3dReplicatePadding2D_16   @44
+	p3dReplicatePadding3D_8   @45
+	p3dReplicatePadding3D_16   @46
 
-	p3dPunThresholding_8  @50
-	p3dPunThresholding_16 @51
+	p3dPunThresholding_8  @47
+	p3dPunThresholding_16 @48
 
-	p3dRidlerThresholding_8  @52
-	p3dRidlerThresholding_16 @53
+	p3dRidlerThresholding_8  @49
+	p3dRidlerThresholding_16 @50
 
-	p3dSijbersPostnovRingRemover2D_8  @54
-	p3dSijbersPostnovRingRemover2D_16  @55
+	p3dSijbersPostnovRingRemover2D_8  @51
+	p3dSijbersPostnovRingRemover2D_16  @52
 
 
 

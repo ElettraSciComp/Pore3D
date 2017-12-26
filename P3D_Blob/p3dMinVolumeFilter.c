@@ -1,30 +1,3 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -37,110 +10,6 @@
 #include "Common/p3dConnectedComponentsLabeling.h"
 #include "Common/p3dUtils.h"
 
-/*int p3dMinVolumeFilter2D(
-        unsigned char* in_rev,
-        unsigned char* out_rev,
-        const unsigned int dimx,
-        const unsigned int dimy,
-        const unsigned int min_area,
-        int conn,
-        int (*wr_log)(const char*, ...)
-        ) {
-    unsigned short* lbl_rev;
-
-    unsigned int* volumes;
-    unsigned short num_el, lbl;
-
-    unsigned int i, j, ct;
-
-    char* auth_code;
-
-    //
-    // Authenticate:
-    //
-    auth_code = authenticate("p3dMinVolumeFilter3D");
-    if (strcmp(auth_code, "1") != 0) goto AUTH_ERROR;
-
-    // Start tracking computational time:
-    if (wr_log != NULL) {
-        p3dResetStartTime();
-        wr_log("Pore3D - Removing blobs having area below %d pixels...", min_area);
-        if (conn == CONN4)
-            wr_log("\t4-connectivity used. ");
-        else // default:
-            wr_log("\t8-connectivity used. ");
-    }
-
-    // Initialize output cloning input:
-    memcpy(out_rev, in_rev, dimx * dimy * sizeof (unsigned char));
-
-    // Allocate memory for labels REV:
-    lbl_rev = (unsigned short*) malloc(dimx * dimy * sizeof (unsigned short));
-
-
-    // Perform connected component labeling:
-    p3dConnectedComponentsLabeling2D(in_rev, lbl_rev, &volumes, &num_el, dimx,
-            dimy, conn, NULL);
-
-    // Init counter:
-    ct = 0;
-
-    // For each connected component labeled:
-    for (lbl = 0; lbl < num_el; lbl++) {
-        // If volume of connected component is below minimum volume:
-        if (volumes[lbl] < min_area) {
-            // Remove connected component:
-            for (j = 0; j < dimy; j++)
-                for (i = 0; i < dimx; i++) {
-                    // Labels start from 3:
-                    if (lbl_rev[ I(i, j, dimx) ] == (lbl + 3)) {
-                        out_rev[ I(i, j, dimx) ] = 0;
-                    }
-                }
-
-            // Keep trace of connected components removed:
-            ct++;
-        }
-    }
-
-
-
-    // Print elapsed time (if required):
-    if (wr_log != NULL) {
-        wr_log("\tPore3D - %d of %f blobs removed.", ct, num_el);
-        wr_log("Pore3D - Removal of blobs having area below %d pixels performed successfully in %s.", min_area, p3dGetElapsedTime_s());
-    }
-
-    // Free memory:
-    if (lbl_rev != NULL) free(lbl_rev);
-    if (volumes != NULL) free(volumes);
-
-    // Return OK:
-    return P3D_SUCCESS;
-
-MEM_ERROR:
-
-    // Free memory:
-    if (lbl_rev != NULL) free(lbl_rev);
-    if (volumes != NULL) free(volumes);
-
-
-    // Log a ERROR message:
-    if (wr_log != NULL) {
-        wr_log("Pore3D - Not enough (contiguous) memory. Program will exit.");
-    }
-
-    // Return OK:
-    return P3D_MEM_ERROR;
-
-AUTH_ERROR:
-
-    if (wr_log != NULL) {
-        wr_log("Pore3D - Authentication error: %s. Program will exit.", auth_code);
-    }
-
-    return P3D_AUTH_ERROR;
-}*/
 
 int p3dMinVolumeFilter3D(
         unsigned char* in_im,
@@ -152,18 +21,19 @@ int p3dMinVolumeFilter3D(
         int conn,
         int (*wr_log)(const char*, ...)
         ) {
-    unsigned short* lbl_im;
+    unsigned int* lbl_im;
 
     unsigned int* volumes;
     bb_t* bbs;
 
     bb_t curr_bb;
-    unsigned short num_el, curr_lbl;
+    unsigned short curr_lbl;
+	unsigned int num_el;
 
     int i, j, k, ccl_removed_ct;
-    int ct;
 
-
+    unsigned int ct;
+	
     // Start tracking computational time:
     if (wr_log != NULL) {
         p3dResetStartTime();
@@ -181,10 +51,10 @@ int p3dMinVolumeFilter3D(
 
 
     // Allocate memory for labels:
-    P3D_TRY(lbl_im = (unsigned short*) malloc(dimx * dimy * dimz * sizeof (unsigned short)));
+    P3D_MEM_TRY(lbl_im = (unsigned int*) malloc(dimx * dimy * dimz * sizeof (unsigned int)));
 
     // Perform connected component labeling:
-    P3D_TRY(p3dConnectedComponentsLabeling_ushort(in_im, lbl_im, &num_el, &volumes, &bbs, dimx,
+    P3D_TRY(p3dConnectedComponentsLabeling_uint(in_im, lbl_im, &num_el, &volumes, &bbs, dimx,
             dimy, dimz, conn, P3D_FALSE, P3D_FALSE));
 
 
@@ -195,7 +65,7 @@ int p3dMinVolumeFilter3D(
 #pragma omp parallel for private(i, j, k, curr_lbl, curr_bb)
     for (ct = 0; ct < num_el; ct++) {
         // If volume of connected component is below minimum volume:
-        if (volumes[ct] < min_volume) {
+        if (volumes[ct] < (unsigned int) min_volume) {
             // Get bounding box:
             curr_bb.min_x = bbs[ct].min_x;
             curr_bb.max_x = bbs[ct].max_x;
@@ -249,15 +119,8 @@ MEM_ERROR:
     }
 
     // Return OK:
-    return P3D_MEM_ERROR;
+    return P3D_ERROR;
 
-/*AUTH_ERROR:
-
-    if (wr_log != NULL) {
-        wr_log("Pore3D - Authentication error: %s. Program will exit.", auth_code);
-    }
-
-    return P3D_AUTH_ERROR;*/
 }
 
 

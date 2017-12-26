@@ -239,7 +239,7 @@ MEM_ERROR:
 		fcoords_list_pop( &tmp_list );
 	}
 
-	return P3D_MEM_ERROR;
+	return P3D_ERROR;
 }
 
 
@@ -354,5 +354,5 @@ int p3dComputeCoreSkeleton (
 
 MEM_ERROR:
 
-	return P3D_MEM_ERROR;
+	return P3D_ERROR;
 }

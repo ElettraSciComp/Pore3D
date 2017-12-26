@@ -1,30 +1,3 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
-
 /* 
  * p3dSquaredEuclideanDistanceTransform  
  * 
@@ -51,6 +24,13 @@
  * Mathematical Morphology and its Applications to Image and Signal 
  * Processing, pp. 331-340. Kluwer, 2000.
  *
+
+ * 
+ * Copyright 2008, SYRMEP Group - Sincrotrone Trieste S.C.p.A.
+ *
+ * Author:	Brun Francesco
+ * Version:	1.0
+ * Date:	19 june 2008
  *
  */
 #include <omp.h>
@@ -235,8 +215,8 @@ int stepY(const int* sdt_x,
 
 
 
-    P3D_TRY(s = (int*) calloc(NCols, sizeof (int)));
-    P3D_TRY(t = (int*) calloc(NCols, sizeof (int)));
+    P3D_MEM_TRY(s = (int*) calloc(NCols, sizeof (int)));
+    P3D_MEM_TRY(t = (int*) calloc(NCols, sizeof (int)));
 
     for (z = 0; z < NPlanes; z++)
         for (x = 0; x < NRows; x++) {
@@ -289,7 +269,7 @@ MEM_ERROR:
     if (t != NULL) free(t);
 
     // Return OK:
-    return P3D_MEM_ERROR;
+    return P3D_ERROR;
 }
 
 /** 
@@ -315,8 +295,8 @@ int stepZ(const int* sdt_xy,
     int x, y, u;
 
 
-    P3D_TRY(s = (int*) calloc(NPlanes, sizeof (int)));
-    P3D_TRY(t = (int*) calloc(NPlanes, sizeof (int)));
+    P3D_MEM_TRY(s = (int*) calloc(NPlanes, sizeof (int)));
+    P3D_MEM_TRY(t = (int*) calloc(NPlanes, sizeof (int)));
 
 
     for (y = 0; y < NCols; y++)
@@ -370,7 +350,7 @@ MEM_ERROR:
     if (t != NULL) free(t);
 
     // Return OK:
-    return P3D_MEM_ERROR;
+    return P3D_ERROR;
 }
 
 /************************************************************************
@@ -380,7 +360,7 @@ MEM_ERROR:
  ************************************************************************/
 int p3dSquaredEuclideanDT(
         unsigned char* in_rev,
-        unsigned short* out_rev,
+        unsigned int* out_rev,
         const int dimx,
         const int dimy,
         const int dimz,
@@ -394,15 +374,7 @@ int p3dSquaredEuclideanDT(
     int i;
 
     int err_code;
-
-    /*char* auth_code;
-
-    //
-    // Authenticate:
-    //
-    auth_code = authenticate("p3dSquaredEuclideanDT");
-    if (strcmp(auth_code, "1") != 0) goto AUTH_ERROR;*/
-
+	
     // Start tracking computational time:
     if (wr_log != NULL) {
         p3dResetStartTime();
@@ -410,24 +382,24 @@ int p3dSquaredEuclideanDT(
     }
 
     // Allocate temporary output:
-    P3D_TRY(tmp_out_rev = (int*) malloc(dimx * dimy * dimz * sizeof (int)));
+    P3D_MEM_TRY(tmp_out_rev = (int*) malloc(dimx * dimy * dimz * sizeof (int)));
 
     // Initialize temporary:
-    P3D_TRY(tmp_rev = (int*) malloc(dimx * dimy * dimz * sizeof (int)));
+    P3D_MEM_TRY(tmp_rev = (int*) malloc(dimx * dimy * dimz * sizeof (int)));
 
     // Compute transform:
     P3D_TRY(err_code = stepX(in_rev, tmp_out_rev, dimx, dimy, dimz, wr_log));
     P3D_TRY(err_code = stepY(tmp_out_rev, tmp_rev, dimx, dimy, dimz, wr_log));
     P3D_TRY(err_code = stepZ(tmp_rev, tmp_out_rev, dimx, dimy, dimz, wr_log));
 
-    // Cast output from int to unsigned short:
+    // Cast output from int to unsigned int:
     for (i = 0; i < (dimx * dimy * dimz); i++)
-        out_rev[i] = (tmp_out_rev[i] > USHRT_MAX) ? USHRT_MAX : (unsigned short) (tmp_out_rev[i]);
+        out_rev[i] = (tmp_out_rev[i] > UINT_MAX) ? UINT_MAX : (unsigned int) (tmp_out_rev[i]);
 
 
     // Print elapsed time (if required):
     if (wr_log != NULL) {
-        wr_log("Pore3D - REV estimated successfully in %0.3f sec.", p3dGetElapsedTime());
+        wr_log("Pore3D - Squared Euclidean Distance Transform computed successfully in %0.3f sec.", p3dGetElapsedTime());
     }
 
     // Free allocated memory:
@@ -449,16 +421,7 @@ MEM_ERROR:
     if (tmp_out_rev != NULL) free(tmp_out_rev);
 
     // Return OK:
-    return P3D_MEM_ERROR;
-
-/*AUTH_ERROR:
-
-    if (wr_log != NULL) {
-        wr_log("Pore3D - Authentication error: %s. Program will exit.", auth_code);
-    }
-
-    return P3D_AUTH_ERROR;*/
-
+    return P3D_ERROR;
 
 }
 

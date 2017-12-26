@@ -166,6 +166,7 @@
     <ClCompile Include="p3d_idlMinVolumeFilter.c" />
     <ClCompile Include="p3d_idlMorphometricAnalysis.c" />
     <ClCompile Include="p3d_idlREVEstimation.c" />
+    <ClCompile Include="p3d_idlSquaredEuclideanDT.c" />
     <ClCompile Include="p3d_idlTextureAnalysis.c" />
     <ClCompile Include="_p3d_idlCommon.c" />
   </ItemGroup>

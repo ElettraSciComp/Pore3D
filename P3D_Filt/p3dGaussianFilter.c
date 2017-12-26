@@ -1,35 +1,10 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <omp.h>
 #include <limits.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include "p3dFilt.h"
 #include "p3dTime.h"
@@ -44,7 +19,8 @@ int p3dGaussianFilter3D_8(
         const double sigma,
         int (*wr_log)(const char*, ...),
         int (*wr_progress)(const int, ...)
-        ) {
+        ) 
+{
     // Padded input and related dims:
     float* tmp_im = NULL;
     float* kernel = NULL;
@@ -55,15 +31,7 @@ int p3dGaussianFilter3D_8(
     int x, y, z;
     int ct, a_rad, a_size;
     double d;
-    double f, w, sum, sum_w;
-    
-    /*char auth_code;
-
-    //
-    // Authenticate:
-    //
-    auth_code = authenticate("p3dGaussianFilter3D_8");
-    if (auth_code == '0') goto AUTH_ERROR;*/
+    double f, sum, sum_w;
 
 
     // Start tracking computational time:
@@ -78,7 +46,7 @@ int p3dGaussianFilter3D_8(
     if (size < 1.0)
         a_rad = 1;
     else
-        a_rad = ceil(size / 2);
+        a_rad = (int) (ceil(size / 2.0));
     a_size = 2 * a_rad + 1;
 
     d = (2.0 * sigma * sigma);
@@ -91,10 +59,10 @@ int p3dGaussianFilter3D_8(
 
 
     // Initialize input:
-    tmp_im = (float*) malloc(a_dimx * a_dimy * a_dimz * sizeof (float));
-    kernel = (float*) malloc(a_size * sizeof (float));
+    P3D_MEM_TRY(tmp_im = (float*) malloc(a_dimx * a_dimy * a_dimz * sizeof (float)));
+    P3D_MEM_TRY(kernel = (float*) malloc(a_size * sizeof (float)));
 
-    _p3dReplicatePadding3D_uchar2float(in_im, tmp_im, dimx, dimy, dimz, a_rad);
+    P3D_TRY(_p3dReplicatePadding3D_uchar2float(in_im, tmp_im, dimx, dimy, dimz, a_rad));
 
     ct = 0;
     sum_w = 0.0;
@@ -103,18 +71,18 @@ int p3dGaussianFilter3D_8(
     for (x = (-a_rad); x <= a_rad; x++) {
        
        f = (x)*(x) / d;
-       kernel[ct] = exp(-f);
+       kernel[ct] = (float) (exp(-f));
        sum_w = sum_w + kernel[ct++];
     }
     ct = 0;
     // Normalize kernel
     for (x = (-a_rad); x <= a_rad; x++) 
-        kernel[ct] = kernel[ct++]/sum_w;
+        kernel[ct] = kernel[ct++]/ ( (float) sum_w );
 
     // X-direction scanning
 #pragma omp parallel for private(i, j, x, sum, ct)
-    for (k = a_rad; k < (a_dimz - a_rad); k++)
-        for (j = a_rad; j < (a_dimy - a_rad); j++)
+    for (k = a_rad; k < (a_dimz - a_rad); k++) {
+        for (j = a_rad; j < (a_dimy - a_rad); j++) {
             for (i = a_rad; i < (a_dimx - a_rad); i++) {
                 sum = 0.0;
                 ct = 0;
@@ -126,8 +94,10 @@ int p3dGaussianFilter3D_8(
                 }
 
                 // Set out voxel with the mean of the sorted temporary array:                
-                tmp_im[ I(i, j, k, a_dimx, a_dimy) ] = sum;
+                tmp_im[ I(i, j, k, a_dimx, a_dimy) ] = (float) sum;
             }
+		}
+	}
 
     // Y-direction scanning
 #pragma omp parallel for private(i, j, y, sum, ct)
@@ -144,7 +114,7 @@ int p3dGaussianFilter3D_8(
                 }
 
                 // Set out voxel with the mean of the sorted temporary array:             
-                tmp_im[ I(i, j, k, a_dimx, a_dimy) ] = sum;
+                tmp_im[ I(i, j, k, a_dimx, a_dimy) ] = (float) sum;
             }
 
     // Z-direction scanning
@@ -195,15 +165,7 @@ MEM_ERROR:
     if (kernel != NULL) free(kernel);
 
     // Return error:
-    return P3D_MEM_ERROR;
-    
-/*AUTH_ERROR:
-
-    if (wr_log != NULL) {
-        wr_log("Pore3D - Authentication error: %s. Program will exit.", auth_code);
-    }
-
-    return P3D_AUTH_ERROR;*/
+    return P3D_ERROR;
 
 }
 
@@ -217,7 +179,8 @@ int p3dGaussianFilter3D_16(
         const double sigma,
         int (*wr_log)(const char*, ...),
         int (*wr_progress)(const int, ...)
-        ) {
+        ) 
+{
     // Padded input and related dims:
     float* tmp_im = NULL;
     float* kernel = NULL;
@@ -228,15 +191,8 @@ int p3dGaussianFilter3D_16(
     int x, y, z;
     int ct, a_rad, a_size;
     double d;
-    double f, w, sum, sum_w;
+    double f, sum, sum_w;
     
-    /*char auth_code;
-
-    //
-    // Authenticate:
-    //
-    auth_code = authenticate("p3dGaussianFilter3D_16");
-    if (auth_code == '0') goto AUTH_ERROR;*/
 
 
     // Start tracking computational time:
@@ -251,7 +207,7 @@ int p3dGaussianFilter3D_16(
     if (size < 1.0)
         a_rad = 1;
     else
-        a_rad = ceil(size / 2);
+        a_rad = (int) (ceil(size / 2.0));
     a_size = 2 * a_rad + 1;
 
     d = (2.0 * sigma * sigma);
@@ -264,10 +220,10 @@ int p3dGaussianFilter3D_16(
 
 
     // Initialize input:
-    tmp_im = (float*) malloc(a_dimx * a_dimy * a_dimz * sizeof (float));
-    kernel = (float*) malloc(a_size * sizeof (float));
+    P3D_MEM_TRY(tmp_im = (float*) malloc(a_dimx * a_dimy * a_dimz * sizeof (float)));
+    P3D_MEM_TRY(kernel = (float*) malloc(a_size * sizeof (float)));
 
-    _p3dReplicatePadding3D_ushort2float(in_im, tmp_im, dimx, dimy, dimz, a_rad);
+    P3D_TRY(_p3dReplicatePadding3D_ushort2float(in_im, tmp_im, dimx, dimy, dimz, a_rad));
 
     ct = 0;
     sum_w = 0.0;
@@ -276,13 +232,13 @@ int p3dGaussianFilter3D_16(
     for (x = (-a_rad); x <= a_rad; x++) {
        
        f = (x)*(x) / d;
-       kernel[ct] = exp(-f);
+       kernel[ct] = (float) (exp(-f));
        sum_w = sum_w + kernel[ct++];
     }
     ct = 0;
     // Normalize kernel
     for (x = (-a_rad); x <= a_rad; x++) 
-        kernel[ct] = kernel[ct++]/sum_w;
+        kernel[ct] = kernel[ct++]/ ((float) sum_w);
 
     // X-direction scanning
 #pragma omp parallel for private(i, j, x, sum, ct)
@@ -299,7 +255,7 @@ int p3dGaussianFilter3D_16(
                 }
 
                 // Set out voxel with the mean of the sorted temporary array:                
-                tmp_im[ I(i, j, k, a_dimx, a_dimy) ] = sum;
+                tmp_im[ I(i, j, k, a_dimx, a_dimy) ] = (float) sum;
             }
 
     // Y-direction scanning
@@ -317,7 +273,7 @@ int p3dGaussianFilter3D_16(
                 }
 
                 // Set out voxel with the mean of the sorted temporary array:             
-                tmp_im[ I(i, j, k, a_dimx, a_dimy) ] = sum;
+                tmp_im[ I(i, j, k, a_dimx, a_dimy) ] = (float) sum;
             }
 
     // Z-direction scanning
@@ -367,14 +323,6 @@ MEM_ERROR:
     if (kernel != NULL) free(kernel);
 
     // Return error:
-    return P3D_MEM_ERROR;
-    
-/*AUTH_ERROR:
-
-    if (wr_log != NULL) {
-        wr_log("Pore3D - Authentication error: %s. Program will exit.", auth_code);
-    }
-
-    return P3D_AUTH_ERROR;*/
+    return P3D_ERROR;
 
 }

@@ -36,18 +36,23 @@
 /*
 	Constants:
 */
-#ifndef P3D_GVF_DEFINED
-	#define P3D_GVF_DEFINED
+#ifndef P3D_SKEL_DEFINED  
+	#define P3D_SKEL_DEFINED
 	
 	#define P3D_FALSE				-1 
 	#define P3D_TRUE				1 
 
-	#define P3D_MEM_ERROR			NULL	/* Leave it NULL for simplify tests */
-	#define P3D_ERROR			    0	/* Leave it NULL for simplify tests */
+	#define P3D_ERROR				0
+	#define P3D_MEM_ERROR           NULL	/* Leave it NULL for simplify tests */
 	#define P3D_SUCCESS				2		/* Any number */
 
 	#define BACKGROUND				0
-	#define OBJECT					UCHAR_MAX
+	#define OBJECT					UCHAR_MAX	
+
+#endif
+
+#ifndef P3D_GVF_DEFINED
+	#define P3D_GVF_DEFINED
 
 	// Constants for 3D connectivity:
 	#define CONN6   711
@@ -81,18 +86,22 @@
 
 #ifndef P3D_GVF_MACROS
 	#define P3D_GVF_MACROS
-
-	#define I(i,j,k,N,M)    ( (j)*(N) + (i) + (k)*(N)*(M) ) 
-	#define MIN(x,y)        (((x) < (y))?(x):(y))
-	#define MAX(x,y)        (((x) > (y))?(x):(y))
-
+		
 	#define EPSILON			1E-3					/* Do not modify: 1E-3 is fair */
 	#define EQUAL(n1, n2)	(IS_ZERO((n1) - (n2)))
 	#define IS_ZERO(n)		(((n) < EPSILON) && ((n) > -EPSILON))
 
 	#define SIGN(n)			(IS_ZERO(n) ? 0 : ((n) < 0.00 ? -1 : 1))
 
-	
+#endif
+
+#ifndef P3D_SKEL_MACROS
+	#define P3D_SKEL_MACROS
+
+	#define I(i,j,k,N,M)    ( (j)*(N) + (i) + (k)*(N)*(M) ) 
+	#define MIN(x,y)        (((x) < (y))?(x):(y))
+	#define MAX(x,y)        (((x) > (y))?(x):(y))
+
 	/* A sort of TRY-CATCH constructor: */
 	#define P3D_MEM_TRY( function ) if ( (function) == P3D_MEM_ERROR) { goto MEM_ERROR; }
 	#define P3D_TRY( function ) if ( (function) == P3D_ERROR) { goto MEM_ERROR; }

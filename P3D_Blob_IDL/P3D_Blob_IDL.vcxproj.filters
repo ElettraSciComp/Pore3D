@@ -54,6 +54,9 @@
     <ClCompile Include="p3d_idlTextureAnalysis.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="p3d_idlSquaredEuclideanDT.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_p3d_idlCommon.h">

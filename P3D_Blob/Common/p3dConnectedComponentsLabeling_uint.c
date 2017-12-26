@@ -806,5 +806,5 @@ MEM_ERROR:
     if (tmp_out_rev != NULL) free(tmp_in_rev);
 
     // Return error code:
-    return P3D_MEM_ERROR;
+    return P3D_ERROR;
 }

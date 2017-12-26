@@ -44,7 +44,7 @@ int coords_list_push (coords_list_t *list, coords_t item)
 		
 	/* Allocate memory for the new item: */
 	new_l = (coords_list_elem_t*) malloc (sizeof(coords_list_elem_t));
-	if ( new_l == NULL ) return P3D_MEM_ERROR;
+	if ( new_l == NULL ) return P3D_ERROR;
 
 	/* Push item into list: */
 	new_l->elem = item;

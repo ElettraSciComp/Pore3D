@@ -1,30 +1,3 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
-
 #include <omp.h>
 
 #define _USE_MATH_DEFINES
@@ -33,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <time.h>
 
 #include <stdio.h>
 
@@ -657,10 +631,6 @@ int eigJacobi(int dim,
 
 } /* end eigJacobi */
 
-/*int customPrint(const char* str, ...) {
-    printf(str);
-    return printf("\n");
-}*/
 
 /************************************************************************/
 /*                                                                      */
@@ -739,20 +709,21 @@ void _getMILs(
 
     unsigned char prec_status, curr_status;
     unsigned int iseed;
+	time_t tt;
 
 
     // Variables for rotation cycle:
     int ct_rot;
 
     // Init random seeds:
-    iseed = (unsigned int) time(NULL);
+    iseed = (unsigned int) time(&tt);
     srand(iseed);
 
 
     // Get BV/TV:
     s = 0.0;
 #pragma omp parallel for reduction (+ : s)
-    for (i = 0; i < (dimx * dimy * dimz); i++)
+    for (i = 0; i < (int) (dimx * dimy * dimz); i++)
         if (in_im[i] == OBJECT) s++;
 
     bvf = s / ((double) (dimx * dimy * dimz));
@@ -1261,7 +1232,7 @@ int _getDegreesOfAnisotropy(
 
     /* Calculate the eigenvalues and eigenvectors of the matrix/tensor */
     status = eigJacobi(dim, eigvals, eigvecs, order, eps, &numiters, maxiters);
-    if (status == 1) return P3D_MEM_ERROR;
+    if (status == 1) return P3D_ERROR;
 
     /* Determine the angles of orientation for the structure */
     orient1a = atan2(*(eigvecs + 6), sqrt(pow(*(eigvecs + 0), 2.0) + pow(*(eigvecs + 3), 2.0)));
@@ -1337,7 +1308,7 @@ int _getDegreesOfAnisotropy(
 int p3dAnisotropyAnalysis(
         unsigned char* in_im,
         unsigned char* msk_im,
-        struct AnisotropyStats* out_stats,
+        AnisotropyStats* out_stats,
         const int dimx,
         const int dimy,
         const int dimz,
@@ -1350,22 +1321,13 @@ int p3dAnisotropyAnalysis(
     double* mil = (double *) malloc(MAXROT * sizeof (double));
     double* coeffs = (double *) malloc(6 * sizeof (double));
 
-    /*char auth_code;
-
-    //
-    // Authenticate:
-    //
-    auth_code = authenticate("p3dAnisotropyAnalysis");
-    if (auth_code == '0') goto AUTH_ERROR;*/
-
+ 
     // Start tracking computational time:
     if (wr_log != NULL) {
         p3dResetStartTime();
         wr_log("Pore3D - Performing anisotropy analysis...");
         wr_log("\tAdopted voxelsize: %0.6f mm.", voxelsize);
     }
-
-
 
     // Call routine to determine MILs based on random rotations: 
     _getMILs(in_im, msk_im, rot_theta, rot_phi, mil, dimx, dimy, dimz, voxelsize);
@@ -1375,9 +1337,9 @@ int p3dAnisotropyAnalysis(
 
     /* Call routine to calculate the properties of the ellipsoid tensor  */
     if (verbose == P3D_TRUE)
-        _getDegreesOfAnisotropy(coeffs, &(out_stats->I), &(out_stats->E), wr_log);
+		_getDegreesOfAnisotropy(coeffs, &(out_stats->I), &(out_stats->E), wr_log);
     else
-        _getDegreesOfAnisotropy(coeffs, &(out_stats->I), &(out_stats->E), NULL);
+        _getDegreesOfAnisotropy(coeffs, &(out_stats->I), &(out_stats->E), NULL);		
 
     if (wr_log != NULL) {
         wr_log("\t----");
@@ -1400,12 +1362,5 @@ int p3dAnisotropyAnalysis(
     // Return OK:
     return P3D_SUCCESS;
 
-/*AUTH_ERROR:
-
-    if (wr_log != NULL) {
-        wr_log("Pore3D - Authentication error: %s. Program will exit.", auth_code);
-    }
-
-    return P3D_AUTH_ERROR;*/
 }
 

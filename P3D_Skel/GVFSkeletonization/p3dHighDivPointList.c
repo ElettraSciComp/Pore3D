@@ -44,7 +44,7 @@ int highDiv_point_list_push (highDiv_point_list_t *list, highDiv_point_t item)
 
 	// Alloc memory for the new item:
 	new_l = (highDiv_point_list_elem_t*) malloc (sizeof(highDiv_point_list_elem_t));
-	if ( new_l == NULL ) return P3D_MEM_ERROR;
+	if ( new_l == NULL ) return P3D_ERROR;
 
 	// Push item into queue:
 	new_l->elem = item;

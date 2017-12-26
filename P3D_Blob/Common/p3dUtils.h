@@ -37,12 +37,13 @@
 /*
 	Constants:
 */
-#ifndef P3D_GVF_DEFINED
-	#define P3D_GVF_DEFINED
-	
+#ifndef P3D_BLOB_DEFINED
+#define P3D_BLOB_DEFINED
+
 	#define P3D_FALSE				-1 
 	#define P3D_TRUE				1 
 
+	#define P3D_ERROR				0
 	#define P3D_MEM_ERROR			NULL	/* Leave it NULL for simplify tests */
 	#define P3D_SUCCESS				2		/* Any number */
 
@@ -79,8 +80,8 @@
 	Macros:
 */
 
-#ifndef P3D_GVF_MACROS
-	#define P3D_GVF_MACROS
+#ifndef P3D_BLOB_MACROS
+	#define P3D_BLOB_MACROS
 
 	#define I(i,j,k,N,M)    ( (j)*(N) + (i) + (k)*(N)*(M) ) 
 	#define MIN(x,y)        (((x) < (y))?(x):(y))
@@ -94,7 +95,8 @@
 
 	
 	/* A sort of TRY-CATCH constructor: */
-	#define P3D_TRY( function ) if ( (function) == P3D_MEM_ERROR) { goto MEM_ERROR; }
+	#define P3D_MEM_TRY( function ) if ( ((function) == P3D_MEM_ERROR) ) { goto MEM_ERROR; }
+	#define P3D_TRY( function ) if ( ((function) == P3D_ERROR) ) { goto MEM_ERROR; }
 
 #endif
 

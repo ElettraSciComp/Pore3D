@@ -1,55 +1,25 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	#define NO_AUTH
 
 	/*
 	Constants:
 	*/
-	#ifndef P3D_DEFINED        
-
-	#define P3D_DEFINED
+#ifndef P3D_SKEL_DEFINED  
+	#define P3D_SKEL_DEFINED
 
 	#define P3D_FALSE				-1 
 	#define P3D_TRUE				1 
 
-
-	#define P3D_AUTH_ERROR         -1
-	#define P3D_MEM_ERROR			NULL	/* Leave it NULL for simplify tests */
+	#define P3D_ERROR				0
+	#define P3D_MEM_ERROR           NULL	/* Leave it NULL for simplify tests */
 	#define P3D_SUCCESS				2		/* Any number */
 
 	#define BACKGROUND				0
 	#define OBJECT					UCHAR_MAX	
 
-	// Skeleton labels on OUT skeleton:
+		// Skeleton labels on OUT skeleton:
 	#define NODE_LABEL        1
 	#define END_LABEL         2
 	#define ISOLATED_LABEL    3
@@ -57,14 +27,14 @@ extern "C" {
 	#define NODETOEND_LABEL   5
 	#define ENDTOEND_LABEL    6
 
-	#endif
+#endif
 
 	/*
 	Macros:
 	*/
 
-	#ifndef P3D_MACROS
-	#define P3D_MACROS
+#ifndef P3D_SKEL_MACROS
+	#define P3D_SKEL_MACROS
 
 	#define I(i,j,k,N,M)    ( (j)*(N) + (i) + (k)*(N)*(M) ) 
 	#define I2(i,j,N)       ( (j)*(N) + (i) ) 
@@ -72,11 +42,13 @@ extern "C" {
 	#define MAX(x,y)        (((x) > (y))?(x):(y))
 
 		/* A sort of TRY-CATCH constructor: */
-	#define P3D_TRY( function ) if ( (function) == P3D_MEM_ERROR) { goto MEM_ERROR; }
-	#endif
+	#define P3D_MEM_TRY( function ) if ( ((function) == P3D_MEM_ERROR) ) { goto MEM_ERROR; }
+	#define P3D_TRY( function ) if ( ((function) == P3D_ERROR) ) { goto MEM_ERROR; }
 
-	#ifndef STRUCTS_DEFINED
-	#define STRUCTS_DEFINED  
+#endif
+
+#ifndef P3D_SKEL_STRUCTS_DEFINED
+#define P3D_SKEL_STRUCTS_DEFINED  
 
 	// Struct for results of skeleton analysis:
 	struct SkeletonStats {
@@ -113,6 +85,12 @@ extern "C" {
 		// NODE points:
 		unsigned short  Node_Counter;	
 		double*  Node_Width; 	
+
+		// Tortuosity indexes:
+		/*unsigned short  Tort_Counter;
+		double*   Tort_X;		
+		double*   Tort_Y;		
+		double*   Tort_Z;*/
 	};
 
 #endif
@@ -199,13 +177,31 @@ extern "C" {
 		const int dimy, 
 		const int dimz,
 		const double merging_factor,
-		const double voxelsize,				// IN: voxel resolution
+		const int tortuosity_depth,
+		const double voxelsize,			// IN: voxel resolution
+		int (*wr_log)(const char*, ...)
+		);
+
+	int p3dSkeletonAnalysis_2( 
+		unsigned char* vol_im,			    // IN: Input segmented (binary) volume
+		unsigned char* skl_im,				// IN: Input (binary) skeleton of the segmented volume
+		struct SkeletonStats* out_stats,	// OUT: Skeleton statistics
+		unsigned char* nodes_im,			// OUT: Image with maximal balls on skeleton node points
+		unsigned char* pores_im,			// OUT: Image with maximal balls on pores
+		unsigned char* ends_im,				// OUT: Image with maximal balls on skeleton end points
+		unsigned char* throats_im,			// OUT: Image with maximal balls on skeleton throats
+		const int dimx,
+		const int dimy, 
+		const int dimz,
+		const double merging_factor,
+		const int tortuosity_depth,
+		const double voxelsize,			// IN: voxel resolution
 		int (*wr_log)(const char*, ...)
 		);
 
 	int p3dSkeletonAnalysisFeasibility (
 		unsigned char*  in_im,		// IN: binary volume
-		unsigned char*	skl_im,		// IN: skeleton mask
+		unsigned char*	 sk_im,		// IN: skeleton mask
 		double* ratio,				// OUT: percentage of total pore space occupied by the skeleton.
 		const int dimx,
 		const int dimy, 

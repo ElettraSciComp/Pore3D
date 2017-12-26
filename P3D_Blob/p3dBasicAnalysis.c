@@ -1,32 +1,4 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
-
 #include <omp.h>
-
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -58,12 +30,12 @@ void ghist(
     // Convert image to int:
     unsigned char* tmp_im = (unsigned char*) malloc(dimx * dimy * dimz * sizeof (unsigned char));
 
-#pragma omp parallel for private( ct )
+	#pragma omp parallel for private( ct )
     for (ct = 0; ct < (dimx * dimy * dimz); ct++)
         tmp_im [ ct ] = (im [ ct ] == OBJECT) ? 1 : 0;
 
     // Compute histogram:
-    for (i = 0; i < (dimx - 1); i++)
+    for (i = 0; i < (dimx - 1); i++) {
         for (j = 0; j < (dimy - 1); j++) {
             l = tmp_im[ I(i, j, 0, dimx, dimy) ] + (tmp_im[ I(i + 1, j, 0, dimx, dimy) ] << 1)
                     + (tmp_im[ I(i, j + 1, 0, dimx, dimy) ] << 2) + (tmp_im[ I(i + 1, j + 1, 0, dimx, dimy) ] << 3);
@@ -76,6 +48,7 @@ void ghist(
                 l >>= 4;
             }
         }
+	}
 
     // Release resources:
     if (tmp_im != NULL) free(tmp_im);
@@ -286,13 +259,14 @@ double euler_plus(double *h, double *Delta) {
 
 int p3dBasicAnalysis(
         unsigned char* in_im, // IN: Input segmented (binary) volume
-        struct BasicStats* out_stats, // OUT: Basic characteristics
+        BasicStats* out_stats, // OUT: Basic characteristics
         const int dimx,
         const int dimy,
         const int dimz,
         const double voxelsize, // IN: voxel resolution
         int (*wr_log)(const char*, ...)
-        ) {
+        ) 
+{
 
     // Allocate memory for temporary variables:
     double* h = (double *) calloc((UCHAR_MAX + 1), sizeof (double));
@@ -300,15 +274,7 @@ int p3dBasicAnalysis(
     delta[0] = voxelsize;
     delta[1] = voxelsize;
     delta[2] = voxelsize;
-
-    /*char auth_code;
-
-    //
-    // Authenticate:
-    //
-    auth_code = authenticate("p3dBasicAnalysis");
-    if (auth_code == '0') goto AUTH_ERROR;*/
-
+	
     // Start tracking computational time:
     if (wr_log != NULL) {
         p3dResetStartTime();
@@ -354,15 +320,4 @@ int p3dBasicAnalysis(
     // Return OK:
     return P3D_SUCCESS;
 
-/*AUTH_ERROR:
-
-    // Release resources:
-    if (h != NULL) free(h);
-    if (delta != NULL) free(delta);
-
-    if (wr_log != NULL) {
-        wr_log("Pore3D - Authentication error: %s. Program will exit.", auth_code);
-    }
-
-    return P3D_AUTH_ERROR;*/
 }

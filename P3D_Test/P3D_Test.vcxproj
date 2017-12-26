@@ -102,14 +102,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Franz\Documents\Visual Studio 2010\Projects\Win_Pore3D\P3D_Skel;C:\Users\Franz\Documents\Visual Studio 2010\Projects\Win_Pore3D\P3D_Blob;C:\Users\Franz\Documents\Visual Studio 2010\Projects\Win_Pore3D\P3D_Filt</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Franz\Documents\Visual Studio 2012\Projects\Pore3D_4GitHub\P3D_Blob;C:\Users\Franz\Documents\Visual Studio 2012\Projects\Pore3D_4GitHub\P3D_Filt;C:\Users\Franz\Documents\Visual Studio 2012\Projects\Pore3D_4GitHub\P3D_Skel</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Franz\Documents\Visual Studio 2010\Projects\Win_Pore3D\x64\Release;C:\Program Files\PThread\lib\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>P3D_Filt.lib;P3D_Skel.lib;P3D_Blob.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Franz\Documents\Visual Studio 2012\Projects\Pore3D_4GitHub\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>P3DFIlt.lib;P3DSkel.lib;P3DBlob.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -142,7 +142,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Franz\Documents\Visual Studio 2010\Projects\Win_Pore3D\P3D_Skel;C:\Users\Franz\Documents\Visual Studio 2010\Projects\Win_Pore3D\P3D_Blob;C:\Users\Franz\Documents\Visual Studio 2010\Projects\Win_Pore3D\P3D_Filt</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Franz\Documents\Visual Studio 2012\Projects\Pore3D_4GitHub\P3D_Blob;C:\Users\Franz\Documents\Visual Studio 2012\Projects\Pore3D_4GitHub\P3D_Filt;C:\Users\Franz\Documents\Visual Studio 2012\Projects\Pore3D_4GitHub\P3D_Skel</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
       <CompileAs>Default</CompileAs>
     </ClCompile>
@@ -151,8 +151,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Users\Franz\Documents\Visual Studio 2010\Projects\Win_Pore3D\x64\Release;C:\Program Files\PThread\lib\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>P3D_Filt.lib;P3D_Skel.lib;P3D_Blob.lib;P3D_Skel.lib;P3D_Blob.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Franz\Documents\Visual Studio 2012\Projects\Pore3D_4GitHub\x64\Release;C:\Program Files\PThread\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>P3DFIlt.lib;P3DSkel.lib;P3DBlob.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

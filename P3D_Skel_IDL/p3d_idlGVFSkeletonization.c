@@ -1,30 +1,3 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
-
 // From C library:
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,7 +23,7 @@ IDL_VPTR p3d_idlGVFSkeletonization (int argc, IDL_VPTR argv[], char* argk)
 		int scale_there;		
 	} KW_RESULT;  
 
-   	// Alphabetical order is crucial:
+	// Alphabetical order is crucial:
 	static IDL_KW_PAR kw_pars[] = {  
 		IDL_KW_FAST_SCAN,  
 		{ "EPS", IDL_TYP_DOUBLE, 1, 0, (int*) IDL_KW_OFFSETOF(eps_there), (char*) IDL_KW_OFFSETOF(eps) },  		
@@ -58,10 +31,10 @@ IDL_VPTR p3d_idlGVFSkeletonization (int argc, IDL_VPTR argv[], char* argk)
 		{ "MU", IDL_TYP_DOUBLE, 1, 0, (int*) IDL_KW_OFFSETOF(mu_there), (char*) IDL_KW_OFFSETOF(mu) },  		
 		{ "SCALE", IDL_TYP_DOUBLE, 1, 0, (int*) IDL_KW_OFFSETOF(scale_there), (char*) IDL_KW_OFFSETOF(scale) }, 
 		{ NULL }  
-	 };  
+	};  
 
 	KW_RESULT kw;
-	
+
 	IDL_VPTR idl_out_im, idl_in_im;
 	unsigned char *in_im8, *out_im8;  		
 	int keywords_ct = 0;
@@ -70,9 +43,9 @@ IDL_VPTR p3d_idlGVFSkeletonization (int argc, IDL_VPTR argv[], char* argk)
 	double eps = 1E-4;
 	double scale = 1.0;
 	double hierarc = 0.0;
-		
+
 	int err_code;
-	
+
 	// Process keywords:
 	IDL_KWProcessByOffset(argc, argv, argk, kw_pars, NULL, 1, &kw); 
 
@@ -143,32 +116,32 @@ IDL_VPTR p3d_idlGVFSkeletonization (int argc, IDL_VPTR argv[], char* argk)
 			// Allocate memory for output:
 			if (!(idl_in_im->flags & IDL_V_TEMP))  
 				out_im8 = (unsigned char *) IDL_MakeTempArray(
-					IDL_TYP_BYTE,
-					idl_in_im->value.arr->n_dim,  
-					idl_in_im->value.arr->dim,  
-					IDL_ARR_INI_ZERO, 
-					&idl_out_im
-					);  
- 
+				IDL_TYP_BYTE,
+				idl_in_im->value.arr->n_dim,  
+				idl_in_im->value.arr->dim,  
+				IDL_ARR_INI_ZERO, 
+				&idl_out_im
+				);  
+
 
 			// Call Pore3D without the mask:
 			err_code = p3dGVFSkeletonization ( 
 				in_im8,
 				out_im8,
-				idl_in_im->value.arr->dim[0],
-				idl_in_im->value.arr->dim[1],
-				idl_in_im->value.arr->dim[2],
+				(int) idl_in_im->value.arr->dim[0],
+				(int) idl_in_im->value.arr->dim[1],
+				(int) idl_in_im->value.arr->dim[2],
 				mu,
 				eps,
 				hierarc,
 				scale,
 				_p3d_idlPrintInfo
-			);
+				);
 
 			// On exception print error:
-			if (err_code == P3D_MEM_ERROR)
+			if (err_code == P3D_ERROR)
 				_p3d_idlPrintNamedError("Error on code execution.");
- 
+
 		}		
 		else
 		{
@@ -180,7 +153,7 @@ IDL_VPTR p3d_idlGVFSkeletonization (int argc, IDL_VPTR argv[], char* argk)
 		_p3d_idlPrintNamedError("Input argument IMAGE must be a 3D matrix.");
 	}
 
-		
+
 	// Free keywords resources:
 	IDL_KW_FREE;
 

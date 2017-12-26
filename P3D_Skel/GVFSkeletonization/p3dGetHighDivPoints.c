@@ -304,5 +304,5 @@ MEM_ERROR:
 	if ( in_gvf_z != NULL ) free( in_gvf_z );
 
 	// Return error:
-	return P3D_MEM_ERROR;
+	return P3D_ERROR;
 }

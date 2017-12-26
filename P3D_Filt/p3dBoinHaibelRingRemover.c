@@ -1,35 +1,10 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <limits.h>
 #include <omp.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include "p3dFilt.h"
 #include "p3dTime.h"
@@ -41,334 +16,303 @@
 #define P3DBOINHAIBELRINGREMOVER_MEDIAN(a,n) _p3dBoinHaibelRingRemover_kth_smallest(a,n,((n)/2))
 
 double _p3dBoinHaibelRingRemover_kth_smallest(double* a, int n, int k) {
-    register int i, j, l, m;
-    register double x;
+	register int i, j, l, m;
+	register double x;
 
-    l = 0;
-    m = n - 1;
-    while (l < m) {
-        x = a[k];
-        i = l;
-        j = m;
-        do {
-            while (a[i] < x) i++;
-            while (x < a[j]) j--;
-            if (i <= j) {
-                P3DBOINHAIBELRINGREMOVER_ELEM_SWAP(a[i], a[j]);
-                i++;
-                j--;
-            }
-        } while (i <= j);
-        if (j < k) l = i;
-        if (k < i) m = j;
-    }
-    return a[k];
+	l = 0;
+	m = n - 1;
+	while (l < m) {
+		x = a[k];
+		i = l;
+		j = m;
+		do {
+			while (a[i] < x) i++;
+			while (x < a[j]) j--;
+			if (i <= j) {
+				P3DBOINHAIBELRINGREMOVER_ELEM_SWAP(a[i], a[j]);
+				i++;
+				j--;
+			}
+		} while (i <= j);
+		if (j < k) l = i;
+		if (k < i) m = j;
+	}
+	return a[k];
 }
 
 
 // This procedure removes ring artifacts from CT images.
 
 int p3dBoinHaibelRingRemover2D_8(
-        unsigned char* in_im,
-        unsigned char* out_im,
-        const int dimx,
-        const int dimy,
-        const int centerX,
-        const int centerY,
-        const int winsize, // IN: width of the moving average
-        const int iterations, // IN: filter can be re-iterated
-        const double precision,
-        int (*wr_log)(const char*, ...)
-        ) {
-    int i, j; // generic counters
-    int k, tmp_k;
-    int sum;
+	unsigned char* in_im,
+	unsigned char* out_im,
+	const int dimx,
+	const int dimy,
+	const double centerX,
+	const double centerY,
+	const int winsize, // IN: width of the moving average
+	const int iterations, // IN: filter can be re-iterated
+	const double precision,
+	int (*wr_log)(const char*, ...)
+	) 
+{
+	int i, j; // generic counters
+	int k, tmp_k;
+	int sum;
 
-    double tmp_val;
+	double tmp_val;
 
-    // Polar images:
-    unsigned char* p_in_im; // no need for malloc
-    unsigned char* c_out_im; // no need for malloc
+	// Polar images:
+	unsigned char* p_in_im; // no need for malloc
+	unsigned char* c_out_im; // no need for malloc
 
-    int p_dim, ct, it_ct;
+	int p_dim, ct, it_ct;
 
-    // Artifacts vectors:
-    double* glob_art;
-    double* v;
+	// Artifacts vectors:
+	double* glob_art;
+	double* v;
 
-    /*char auth_code;
+	// STEP2: Transform in polar coordinates. Remember that memory allocation
+	// for output images is performed within the procedure.
 
-    //
-    // Authenticate:
-    //
-    auth_code = authenticate("p3dBoinHaibelRingRemover2D_8");
-    if (auth_code == '0') goto AUTH_ERROR;*/
+	p3dCartesian2polar_8(in_im, &p_in_im, dimx, dimy, centerX, centerY, precision, &p_dim);
 
-    // STEP2: Transform in polar coordinates. Remember that memory allocation
-    // for output images is performed within the procedure.
+	// STEP3: Artifact template selection.
 
-    p3dCartesian2polar_8(in_im, &p_in_im, dimx, dimy, centerX, centerY, precision, &p_dim);
+	// Allocate dynamic memory:
 
-    // STEP3: Artifact template selection.
+	// Now that we know the dimensions of polar image we can allocate
+	// the global artifacts correction vector:
+	glob_art = (double*) calloc(p_dim, sizeof (double));
 
-    // Allocate dynamic memory:
+	// Allocate memory for the column:
+	// v = (double*) malloc(row_ct * sizeof (double));
 
-    // Now that we know the dimensions of polar image we can allocate
-    // the global artifacts correction vector:
-    glob_art = (double*) calloc(p_dim, sizeof (double));
+	for (it_ct = 0; it_ct < iterations; it_ct++) {
+		// Compute median for each column and store the value in the
+		// artifact vector:
+		#pragma omp parallel for private(k, sum)
+		for (j = 0; j < p_dim; j++) {
+			// Fill the column array:
+			sum = 0;
 
-    // Allocate memory for the column:
-    // v = (double*) malloc(row_ct * sizeof (double));
+			for (k = 0; k < p_dim; k++) {
+				sum = sum + p_in_im[ I2(j, k, p_dim) ];
+			}
 
-    for (it_ct = 0; it_ct < iterations; it_ct++) {
-        // Compute median for each column and store the value in the
-        // artifact vector:
-#pragma omp parallel for private(k, sum)
-        for (j = 0; j < p_dim; j++) {
-            // Fill the column array:
-            sum = 0;
+			// Put the sum in artifact vector:
+			glob_art[j] = sum;
+		}
 
-            for (k = 0; k < p_dim; k++) {
-                sum = sum + p_in_im[ I2(j, k, p_dim) ];
-            }
+		// Free memory for the column:
+		// Cycle for each element in line to compute moving average:
+		#pragma omp parallel for private(v, ct, k, tmp_k)
+		for (j = 0; j < p_dim; j++) {
+			/*sum = 0;
 
-            // Put the sum in artifact vector:
-            glob_art[j] = sum;
-        }
+			// Moving average:
+			for (k = ( j - (win_size / 2)); k < ( j + (win_size / 2)); k++)
+			{
+			tmp_k = k;
 
-        // Free memory for the column:
-        // Cycle for each element in line to compute moving average:
-#pragma omp parallel for private(v, ct, k, tmp_k)
-        for (j = 0; j < p_dim; j++) {
-            /*sum = 0;
+			// Replicate padding:
+			if (tmp_k < 0) tmp_k = 0;
+			if (tmp_k > (p_dim - 1)) tmp_k = p_dim - 1;
 
-            // Moving average:
-            for (k = ( j - (win_size / 2)); k < ( j + (win_size / 2)); k++)
-            {
-                    tmp_k = k;
+			sum = sum + glob_art[ tmp_k ];
+			}
 
-                    // Replicate padding:
-                    if (tmp_k < 0) tmp_k = 0;
-                    if (tmp_k > (p_dim - 1)) tmp_k = p_dim - 1;
+			// Moving average:
+			glob_art[j] = (sum / win_size) / (glob_art[j] + EPS);*/
 
-                    sum = sum + glob_art[ tmp_k ];
-            }
+			// Allocate memory for the column:
+			v = (double*) malloc(winsize * sizeof (double));
+			ct = 0;
 
-            // Moving average:
-            glob_art[j] = (sum / win_size) / (glob_art[j] + EPS);*/
+			for (k = (j - (winsize / 2)); k < (j + (winsize / 2)); k++) {
+				tmp_k = k;
 
-            // Allocate memory for the column:
-            v = (double*) malloc(winsize * sizeof (double));
-            ct = 0;
+				// Replicate padding:
+				if (tmp_k < 0) tmp_k = 0;
+				if (tmp_k > (p_dim - 1)) tmp_k = p_dim - 1;
 
-            for (k = (j - (winsize / 2)); k < (j + (winsize / 2)); k++) {
-                tmp_k = k;
+				v[ct++] = glob_art[ tmp_k ];
+			}
 
-                // Replicate padding:
-                if (tmp_k < 0) tmp_k = 0;
-                if (tmp_k > (p_dim - 1)) tmp_k = p_dim - 1;
+			glob_art[j] = (P3DBOINHAIBELRINGREMOVER_MEDIAN(v, winsize) / (glob_art[j] + EPS));
 
-                v[ct++] = glob_art[ tmp_k ];
-            }
-
-            glob_art[j] = (P3DBOINHAIBELRINGREMOVER_MEDIAN(v, winsize) / (glob_art[j] + EPS));
-
-            // Free memory for the column:
-            free(v);
-        }
+			// Free memory for the column:
+			free(v);
+		}
 
 
-        // The artifact template vector is multiplied for each
-        // row of the polar image P:
-#pragma omp parallel for private(i, tmp_val)
-        for (j = 0; j < p_dim; j++)
-            for (i = 0; i < p_dim; i++) {
-                // Take care of intensity bounds:
-                tmp_val = p_in_im[ I2(i, j, p_dim) ] * glob_art[i];
+		// The artifact template vector is multiplied for each
+		// row of the polar image P:
+		#pragma omp parallel for private(i, tmp_val)
+		for (j = 0; j < p_dim; j++) {
+			for (i = 0; i < p_dim; i++) {
+				// Take care of intensity bounds:
+				tmp_val = p_in_im[ I2(i, j, p_dim) ] * glob_art[i];
 
-                if (tmp_val < 0.0) tmp_val = 0.0;
-                if (tmp_val > UCHAR_MAX) tmp_val = UCHAR_MAX;
+				if (tmp_val < 0.0) tmp_val = 0.0;
+				if (tmp_val > UCHAR_MAX) tmp_val = UCHAR_MAX;
 
-                p_in_im[ I2(i, j, p_dim) ] = (unsigned char) tmp_val;
-            }
+				p_in_im[ I2(i, j, p_dim) ] = (unsigned char) tmp_val;
+			}
+		}
+	}
 
+	//p3dWriteRaw8 ( p_in_im, "C:\\p_out_im.raw", p_dim, p_dim, 1, printf );
 
-    }
+	// Return in cartesian coordinates:
+	p3dPolar2cartesian_8(p_in_im, &c_out_im, p_dim, centerX, centerY, dimx, dimy);
 
-    //p3dWriteRaw8 ( p_in_im, "C:\\p_out_im.raw", p_dim, p_dim, 1, printf );
+	// Copy C_OUT_IM to the output of the procedure:
+	memcpy(out_im, c_out_im, dimx * dimy * sizeof (unsigned char));
 
-    // Return in cartesian coordinates:
-    p3dPolar2cartesian_8(p_in_im, &c_out_im, p_dim, centerX, centerY, dimx, dimy);
+	// Free memory:
+	free(glob_art);
 
-    // Copy C_OUT_IM to the output of the procedure:
-    memcpy(out_im, c_out_im, dimx * dimy * sizeof (unsigned char));
+	free(p_in_im);
+	free(c_out_im);
 
-    // Free memory:
-    free(glob_art);
+	return P3D_SUCCESS;
 
-    free(p_in_im);
-    free(c_out_im);
-
-    return P3D_SUCCESS;
-    
-   /* AUTH_ERROR:
-
-    if (wr_log != NULL) {
-        wr_log("Pore3D - Authentication error: %s. Program will exit.", auth_code);
-    }
-
-    return P3D_AUTH_ERROR;*/
 }
 
 int p3dBoinHaibelRingRemover2D_16(
-        unsigned short* in_im,
-        unsigned short* out_im,
-        const int dimx,
-        const int dimy,
-        const int centerX,
-        const int centerY,
-        const int winsize, // IN: width of the moving average
-        const int iterations, // IN: filter can be re-iterated
-        const double precision,
-        int (*wr_log)(const char*, ...)
-        ) {
-    int i, j; // generic counters
-    int k, tmp_k;
-    int sum;
+	unsigned short* in_im,
+	unsigned short* out_im,
+	const int dimx,
+	const int dimy,
+	const double centerX,
+	const double centerY,
+	const int winsize, // IN: width of the moving average
+	const int iterations, // IN: filter can be re-iterated
+	const double precision,
+	int (*wr_log)(const char*, ...)
+	) 
+{
+	int i, j; // generic counters
+	int k, tmp_k;
+	int sum;
 
-    double tmp_val;
+	double tmp_val;
 
-    // Polar images:
-    unsigned short* p_in_im; // no need for malloc
-    unsigned short* c_out_im; // no need for malloc
+	// Polar images:
+	unsigned short* p_in_im; // no need for malloc
+	unsigned short* c_out_im; // no need for malloc
 
-    int p_dim, ct, it_ct;
+	int p_dim, ct, it_ct;
 
-    // Artifacts vectors:
-    double* glob_art;
-    double* v;
+	// Artifacts vectors:
+	double* glob_art;
+	double* v;	
 
-   /* char auth_code;
+	// STEP2: Transform in polar coordinates. Remember that memory allocation
+	// for output images is performed within the procedure.
 
-    //
-    // Authenticate:
-    //
-    auth_code = authenticate("p3dBoinHaibelRingRemover2D_16");
-    if (auth_code == '0') goto AUTH_ERROR;*/
+	p3dCartesian2polar_16(in_im, &p_in_im, dimx, dimy, centerX, centerY, precision, &p_dim);
 
+	// STEP3: Artifact template selection.
 
-    // STEP2: Transform in polar coordinates. Remember that memory allocation
-    // for output images is performed within the procedure.
+	// Allocate dynamic memory:
 
-    p3dCartesian2polar_16(in_im, &p_in_im, dimx, dimy, centerX, centerY, precision, &p_dim);
+	// Now that we know the dimensions of polar image we can allocate
+	// the global artifacts correction vector:
+	glob_art = (double*) calloc(p_dim, sizeof (double));
 
-    // STEP3: Artifact template selection.
+	// Allocate memory for the column:
+	// v = (double*) malloc(row_ct * sizeof (double));
 
-    // Allocate dynamic memory:
+	// Compute median for each column and store the value in the
+	// artifact vector:
 
-    // Now that we know the dimensions of polar image we can allocate
-    // the global artifacts correction vector:
-    glob_art = (double*) calloc(p_dim, sizeof (double));
+	for (it_ct = 0; it_ct < iterations; it_ct++) {
+		#pragma omp parallel for private(k, sum)
+		for (j = 0; j < p_dim; j++) {
+			// Fill the column array:
+			sum = 0;
 
-    // Allocate memory for the column:
-    // v = (double*) malloc(row_ct * sizeof (double));
+			for (k = 0; k < p_dim; k++) {
+				sum = sum + p_in_im[ I2(j, k, p_dim) ];
+			}
 
-    // Compute median for each column and store the value in the
-    // artifact vector:
+			// Put the sum in artifact vector:
+			glob_art[j] = sum;
+		}
 
-        for (it_ct = 0; it_ct < iterations; it_ct++) {
-#pragma omp parallel for private(k, sum)
-    for (j = 0; j < p_dim; j++) {
-        // Fill the column array:
-        sum = 0;
+		// Free memory for the column:
+		// Cycle for each element in line to compute moving average:
+		#pragma omp parallel for private(v, ct, k, tmp_k)
+		for (j = 0; j < p_dim; j++) {
+			/*sum = 0;
 
-        for (k = 0; k < p_dim; k++) {
-            sum = sum + p_in_im[ I2(j, k, p_dim) ];
-        }
+			// Moving average:
+			for (k = ( j - (win_size / 2)); k < ( j + (win_size / 2)); k++)
+			{
+			tmp_k = k;
 
-        // Put the sum in artifact vector:
-        glob_art[j] = sum;
-    }
+			// Replicate padding:
+			if (tmp_k < 0) tmp_k = 0;
+			if (tmp_k > (p_dim - 1)) tmp_k = p_dim - 1;
 
-    // Free memory for the column:
-    // Cycle for each element in line to compute moving average:
-#pragma omp parallel for private(v, ct, k, tmp_k)
-    for (j = 0; j < p_dim; j++) {
-        /*sum = 0;
+			sum = sum + glob_art[ tmp_k ];
+			}
 
-        // Moving average:
-        for (k = ( j - (win_size / 2)); k < ( j + (win_size / 2)); k++)
-        {
-                tmp_k = k;
+			// Moving average:
+			glob_art[j] = (sum / win_size) / (glob_art[j] + EPS);*/
 
-                // Replicate padding:
-                if (tmp_k < 0) tmp_k = 0;
-                if (tmp_k > (p_dim - 1)) tmp_k = p_dim - 1;
+			// Allocate memory for the column:
+			v = (double*) malloc(winsize * sizeof (double));
+			ct = 0;
 
-                sum = sum + glob_art[ tmp_k ];
-        }
+			for (k = (j - (winsize / 2)); k < (j + (winsize / 2)); k++) {
+				tmp_k = k;
 
-        // Moving average:
-        glob_art[j] = (sum / win_size) / (glob_art[j] + EPS);*/
+				// Replicate padding:
+				if (tmp_k < 0) tmp_k = 0;
+				if (tmp_k > (p_dim - 1)) tmp_k = p_dim - 1;
 
-        // Allocate memory for the column:
-        v = (double*) malloc(winsize * sizeof (double));
-        ct = 0;
+				v[ct++] = glob_art[ tmp_k ];
+			}
 
-        for (k = (j - (winsize / 2)); k < (j + (winsize / 2)); k++) {
-            tmp_k = k;
+			glob_art[j] = (P3DBOINHAIBELRINGREMOVER_MEDIAN(v, winsize) / (glob_art[j] + EPS));
 
-            // Replicate padding:
-            if (tmp_k < 0) tmp_k = 0;
-            if (tmp_k > (p_dim - 1)) tmp_k = p_dim - 1;
-
-            v[ct++] = glob_art[ tmp_k ];
-        }
-
-        glob_art[j] = (P3DBOINHAIBELRINGREMOVER_MEDIAN(v, winsize) / (glob_art[j] + EPS));
-
-        // Free memory for the column:
-        free(v);
-    }
+			// Free memory for the column:
+			free(v);
+		}
 
 
-    // The artifact template vector is multiplied for each
-    // row of the polar image P:
-#pragma omp parallel for private(i, tmp_val)
-    for (j = 0; j < p_dim; j++)
-        for (i = 0; i < p_dim; i++) {
-            // Take care of intensity bounds:
-            tmp_val = p_in_im[ I2(i, j, p_dim) ] * glob_art[i];
+		// The artifact template vector is multiplied for each
+		// row of the polar image P:
+		#pragma omp parallel for private(i, tmp_val)
+		for (j = 0; j < p_dim; j++) {
+			for (i = 0; i < p_dim; i++) {
+				// Take care of intensity bounds:
+				tmp_val = p_in_im[ I2(i, j, p_dim) ] * glob_art[i];
 
-            if (tmp_val < 0.0) tmp_val = 0.0;
-            if (tmp_val > USHRT_MAX) tmp_val = USHRT_MAX;
+				if (tmp_val < 0.0) tmp_val = 0.0;
+				if (tmp_val > USHRT_MAX) tmp_val = USHRT_MAX;
 
-            p_in_im[ I2(i, j, p_dim) ] = (unsigned short) tmp_val;
-        }
+				p_in_im[ I2(i, j, p_dim) ] = (unsigned short) tmp_val;
+			}
+		}
+	}
 
-        }
+	//p3dWriteRaw8 ( p_in_im, "C:\\p_out_im.raw", p_dim, p_dim, 1, printf );
 
-    //p3dWriteRaw8 ( p_in_im, "C:\\p_out_im.raw", p_dim, p_dim, 1, printf );
+	// Return in cartesian coordinates:
+	p3dPolar2cartesian_16(p_in_im, &c_out_im, p_dim, centerX, centerY, dimx, dimy);
 
-    // Return in cartesian coordinates:
-    p3dPolar2cartesian_16(p_in_im, &c_out_im, p_dim, centerX, centerY, dimx, dimy);
+	// Copy C_OUT_IM to the output of the procedure:
+	memcpy(out_im, c_out_im, dimx * dimy * sizeof (unsigned short));
 
-    // Copy C_OUT_IM to the output of the procedure:
-    memcpy(out_im, c_out_im, dimx * dimy * sizeof (unsigned short));
+	// Free memory:
+	free(glob_art);
 
-    // Free memory:
-    free(glob_art);
+	free(p_in_im);
+	free(c_out_im);
 
-    free(p_in_im);
-    free(c_out_im);
-
-    return P3D_SUCCESS;
-    
-/*AUTH_ERROR:
-
-    if (wr_log != NULL) {
-        wr_log("Pore3D - Authentication error: %s. Program will exit.", auth_code);
-    }
-
-    return P3D_AUTH_ERROR;*/
+	return P3D_SUCCESS;
 }

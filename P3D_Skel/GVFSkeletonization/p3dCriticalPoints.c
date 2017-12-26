@@ -264,42 +264,42 @@ int getCriticalPointInFloatCell (
 				err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, 
 					x, y, z, cellsize/2.0, crit_point_list );
 				if ( err_code == P3D_TRUE ) return P3D_TRUE;
-				if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+				if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 				err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, 
 					x + cellsize/2.0, y, z, cellsize/2.0, crit_point_list );
 				if ( err_code == P3D_TRUE ) return P3D_TRUE;
-				if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+				if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 				err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, 
 					x, y + cellsize/2.0, z, cellsize/2.0, crit_point_list );
 				if ( err_code == P3D_TRUE ) return P3D_TRUE;
-				if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+				if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 				err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, 
 					x + cellsize/2.0, y + cellsize/2.0, z, cellsize/2.0, crit_point_list );
 				if ( err_code == P3D_TRUE ) return P3D_TRUE;
-				if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+				if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 				err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, 
 					x, y, z + cellsize/2.0, cellsize/2.0, crit_point_list );
 				if ( err_code == P3D_TRUE ) return P3D_TRUE;
-				if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+				if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 				err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, 
 					x + cellsize/2.0, y, z + cellsize/2.0, cellsize/2.0, crit_point_list );
 				if ( err_code == P3D_TRUE ) return P3D_TRUE;
-				if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+				if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 				err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, 
 					x, y + cellsize/2.0, z + cellsize/2.0, cellsize/2.0, crit_point_list );
 				if ( err_code == P3D_TRUE ) return P3D_TRUE;
-				if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+				if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 				err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, 
 					x + cellsize/2.0, y + cellsize/2.0, z + cellsize/2.0, cellsize/2.0, crit_point_list );
 				if ( err_code == P3D_TRUE ) return P3D_TRUE;
-				if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+				if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 			}
 		}
@@ -309,7 +309,7 @@ int getCriticalPointInFloatCell (
 
 MEM_ERROR:
 
-	return P3D_MEM_ERROR;
+	return P3D_ERROR;
 }
 
 
@@ -365,35 +365,35 @@ int p3dGetCriticalPoints (
 						// Explore subcells:		
 						err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, i, j, k, 0.5, crit_point_list );
 						if ( err_code == P3D_TRUE ) continue;
-						if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+						if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 						err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, i, j, k + 0.5, 0.5, crit_point_list );
 						if ( err_code == P3D_TRUE ) continue;
-						if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+						if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 						err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, i, j + 0.5, k, 0.5, crit_point_list ); 
 						if ( err_code == P3D_TRUE ) continue;
-						if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+						if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 						err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, i + 0.5, j, k, 0.5, crit_point_list );
 						if ( err_code == P3D_TRUE ) continue;
-						if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+						if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 						err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, i, j + 0.5, k + 0.5, 0.5, crit_point_list );
 						if ( err_code == P3D_TRUE ) continue;
-						if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+						if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 						err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, i + 0.5, j, k + 0.5, 0.5, crit_point_list );
 						if ( err_code == P3D_TRUE ) continue;
-						if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+						if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 						err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, i + 0.5, j + 0.5, k, 0.5, crit_point_list );
 						if ( err_code == P3D_TRUE ) continue;
-						if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+						if ( err_code == P3D_ERROR ) return P3D_ERROR;
 
 						err_code = getCriticalPointInFloatCell (gvf_x, gvf_y, gvf_z, dimx, dimy, dimz, i + 0.5, j + 0.5, k + 0.5, 0.5, crit_point_list );
 						if ( err_code == P3D_TRUE ) continue;
-						if ( err_code == P3D_MEM_ERROR ) return P3D_MEM_ERROR;
+						if ( err_code == P3D_ERROR ) return P3D_ERROR;
 					}
 				}
 			}
@@ -404,7 +404,7 @@ int p3dGetCriticalPoints (
 
 MEM_ERROR:
 
-	return P3D_MEM_ERROR;
+	return P3D_ERROR;
 }
 
 
@@ -608,5 +608,5 @@ MEM_ERROR:
 	if ( eigvals_re != NULL ) free( eigvals_re );
 	if ( eigvals_im != NULL ) free( eigvals_im );
 
-	return P3D_MEM_ERROR;
+	return P3D_ERROR;
 }

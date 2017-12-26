@@ -44,7 +44,7 @@ int crit_point_list_push (crit_point_list_t *list, crit_point_t item)
 
 	// Alloc memory for the new item:
 	new_l = (crit_point_list_elem_t*) malloc (sizeof(crit_point_list_elem_t));
-	if ( new_l == NULL ) return P3D_MEM_ERROR;
+	if ( new_l == NULL ) return P3D_ERROR;
 
 	// Push item into queue:
 	new_l->elem = item;

@@ -561,7 +561,7 @@ int p3dGetMaxVolumeRegion (
 	int i,j,k, num_el;
 
 	int lbl_max;
-	int vol_max;
+	unsigned int vol_max;
 
 	int err_code;
 

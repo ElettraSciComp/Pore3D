@@ -1,29 +1,3 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
 #include <omp.h>
 
 
@@ -33,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <time.h>
 
 #include <stdio.h>
 
@@ -200,17 +175,18 @@ int p3dBlobAnalysis(
         const int max_rot,
         const int skip_borders,
         int (*wr_log)(const char*, ...)
-        ) {
-    unsigned short* dt_im;
+        ) {	
+
+    unsigned int* dt_im;
     unsigned int* lbl_im;
     int i, j, k;
     int a, b, c;
     int dist_x, dist_y, dist_z;
     int delta;
 	unsigned int ct;
-    unsigned int rad;
+    int rad;
     int max_i, max_j, max_k;
-    int cen_i, cen_j, cen_k, cen_ct;
+    double cen_i, cen_j, cen_k, cen_ct;
     bb_t curr_bb;
 
     double* v_length = NULL;
@@ -220,7 +196,7 @@ int p3dBlobAnalysis(
     int free_flag = P3D_FALSE;
     unsigned int num_el;
     unsigned int curr_lbl;
-    unsigned short max_sph = 0;
+    unsigned int max_sph = 0;
     int ct_rot;
     unsigned int* volumes;
     bb_t* bbs;
@@ -248,15 +224,8 @@ int p3dBlobAnalysis(
 
     unsigned char prec_status, curr_status;
     unsigned int iseed;
-
-    /*char auth_code;
-
-    //
-    // Authenticate:
-    //
-    //auth_code = authenticate("p3dBlobAnalysis");
-    //if (auth_code == '0') goto AUTH_ERROR;*/
-
+	time_t t;
+	
     // Start tracking computational time:
     if (wr_log != NULL) {
         p3dResetStartTime();
@@ -274,26 +243,26 @@ int p3dBlobAnalysis(
     }
 
     // Get distance transform and allocate memory for related image:
-    P3D_TRY(dt_im = (unsigned short*) malloc(dimx * dimy * dimz * sizeof (unsigned short)));
+    P3D_MEM_TRY(dt_im = (unsigned int*) malloc(dimx * dimy * dimz * sizeof (unsigned int)));
     p3dSquaredEuclideanDT(in_im, dt_im, dimx, dimy, dimz, NULL);
 
 	if (wr_log != NULL) {
 		wr_log("\t----");
-        wr_log("\tDistance transform succesfully computed.");
+        wr_log("\tDistance transform successfully computed.");
 	}
 
     // Get connected components labeled image and allocate memory for related image:
-    P3D_TRY(lbl_im = (unsigned int*) malloc(dimx * dimy * dimz * sizeof (unsigned int)));
+    P3D_MEM_TRY(lbl_im = (unsigned int*) malloc(dimx * dimy * dimz * sizeof (unsigned int)));
 	P3D_TRY(p3dConnectedComponentsLabeling_uint(in_im, lbl_im, &num_el, &volumes, &bbs,
             dimx, dimy, dimz, conn, P3D_FALSE, skip_borders));	
 
     if (blob_im == NULL) {
         free_flag = P3D_TRUE;
-        P3D_TRY(blob_im = (unsigned char*) calloc(dimx * dimy * dimz, sizeof (unsigned char)));
+        P3D_MEM_TRY(blob_im = (unsigned char*) calloc(dimx * dimy * dimz, sizeof (unsigned char)));
     }
 
 	if (wr_log != NULL) {
-        wr_log("\tBlob labeling succesfully performed.", num_el);
+        wr_log("\tBlob labeling successfully performed.");
 	}
 	
 
@@ -326,6 +295,7 @@ int p3dBlobAnalysis(
     }
 
 
+
     // Scanning volume determining values for further use in stats computing:
     //#pragma omp parallel for private ( curr_bb, curr_lbl, max_sph, i, j, k, a, b, c, dist_x, dist_y, dist_z, dist_min, dist_max, max_i, max_j, max_k, rad, delta )
     for (ct = (unsigned int) 0; ct < num_el; ct = (unsigned int) (ct+1)) {
@@ -338,9 +308,9 @@ int p3dBlobAnalysis(
         curr_bb.max_z = bbs[ct].max_z;
 
         // Compute distances in three directions:
-        dist_x = curr_bb.max_x - curr_bb.min_x;
-        dist_y = curr_bb.max_y - curr_bb.min_y;
-        dist_z = curr_bb.max_z - curr_bb.min_z;
+        dist_x = curr_bb.max_x - curr_bb.min_x + 1;
+        dist_y = curr_bb.max_y - curr_bb.min_y + 1;
+        dist_z = curr_bb.max_z - curr_bb.min_z + 1;
 
 
         // Set current label:
@@ -355,35 +325,35 @@ int p3dBlobAnalysis(
         ///
 
         // Scan bounding box to first get the baricenter:
-        cen_i = 0;
-        cen_j = 0;
-        cen_k = 0;
-        cen_ct = 0;
+        cen_i = 0.0;
+        cen_j = 0.0;
+        cen_k = 0.0;
+        cen_ct = 0.0;
         for (k = curr_bb.min_z; k <= curr_bb.max_z; k++)
             for (j = curr_bb.min_y; j <= curr_bb.max_y; j++)
                 for (i = curr_bb.min_x; i <= curr_bb.max_x; i++) {
                     if (lbl_im[ I(i, j, k, dimx, dimy) ] == curr_lbl) {
                         // Compute the center of mass:
-                        cen_i += i;
-                        cen_j += j;
-                        cen_k += k;
-                        cen_ct++;
+                        cen_i = cen_i + (double) i;
+                        cen_j = cen_j + (double) j;
+                        cen_k = cen_k + (double) k;
+                        cen_ct = cen_ct + 1.0;
                     }
                 }
 
-        cen_i = (int) (cen_i / ((double) (cen_ct)));
-        cen_j = (int) (cen_j / ((double) (cen_ct)));
-        cen_k = (int) (cen_k / ((double) (cen_ct)));
+        cen_i = cen_i / cen_ct;
+        cen_j = cen_j / cen_ct;
+        cen_k = cen_k / cen_ct;
 
         // ---------------------------------------------------------------
 
-        // Now apply the "star" algorithm:
-        iseed = (unsigned int) time(NULL);
-        srand(iseed);
-
+		// Now apply the "star" algorithm:
+		iseed = (unsigned int) time(&t);
+		srand(iseed);
 
         // For each of the max_rot direction computed:
-        for (ct_rot = 0; ct_rot < max_rot; ct_rot++) {
+        for (ct_rot = 0; ct_rot < max_rot; ct_rot++) 
+		{
             rot_theta[ct_rot] = (rand() / ((double) RAND_MAX + 1)) * M_PI;
             rot_phi[ct_rot] = (rand() / ((double) RAND_MAX + 1)) * M_PI;
 
@@ -419,10 +389,11 @@ int p3dBlobAnalysis(
             x = cen_i;
             y = cen_j;
             z = cen_k;
+			
 
             // Reset status:
-            prec_status = in_im[ I((int) x, (int) y, (int) z, dimx, dimy)];
-            curr_status = in_im[ I((int) x, (int) y, (int) z, dimx, dimy)];
+            prec_status = in_im[ I((int) (x + 0.5), (int) (y + 0.5), (int) (z + 0.5), dimx, dimy) ];
+            curr_status = in_im[ I((int) (x + 0.5), (int) (y + 0.5), (int) (z + 0.5), dimx, dimy) ];
 
             // Init variables:
             prec_x = x;
@@ -436,12 +407,12 @@ int p3dBlobAnalysis(
             // mask are reached of image edges are reached:
 
             // Explore the incremental versus while edges of VOI are reached:
-            while ((x >= 0) && (x < dimx) &&
-                    (y >= 0) && (y < dimy) &&
-                    (z >= 0) && (z < dimz) &&
-                    (lbl_im[ I((int) x, (int) y, (int) z, dimx, dimy) ] == curr_lbl)
+            while ( (((int) (x + 0.5)) >= 0) && (((int) (x + 0.5)) < dimx) &&
+                    (((int) (y + 0.5)) >= 0) && (((int) (y + 0.5)) < dimy) &&
+                    (((int) (z + 0.5)) >= 0) && (((int) (z + 0.5)) < dimz) &&
+                    (lbl_im[ I((int) (x + 0.5), (int) (y + 0.5), (int) (z + 0.5), dimx, dimy) ] == curr_lbl)
                     ) {
-                curr_status = in_im[ I((int) x, (int) y, (int) z, dimx, dimy)];
+                curr_status = in_im[ I((int) (x + 0.5), (int) (y + 0.5), (int) (z + 0.5), dimx, dimy) ];
 
                 // If we reach the background save coords:
                 if (curr_status != prec_status) {
@@ -468,8 +439,8 @@ int p3dBlobAnalysis(
             z = cen_k;
 
             // Reset status:
-            prec_status = in_im[ I((int) x, (int) y, (int) z, dimx, dimy)];
-            curr_status = in_im[ I((int) x, (int) y, (int) z, dimx, dimy)];
+            prec_status = in_im[ I((int) (x + 0.5), (int) (y + 0.5), (int) (z + 0.5), dimx, dimy) ];
+            curr_status = in_im[ I((int) (x + 0.5), (int) (y + 0.5), (int) (z + 0.5), dimx, dimy) ];
 
             // Init variables:
             prec_x = x;
@@ -477,12 +448,12 @@ int p3dBlobAnalysis(
             prec_z = z;
 
             // Explore the decremental versus while edges of VOI are reached:
-            while ((x >= 0) && (x < dimx) &&
-                    (y >= 0) && (y < dimy) &&
-                    (z >= 0) && (z < dimz) &&
-                    (lbl_im[ I((int) x, (int) y, (int) z, dimx, dimy) ] == curr_lbl)
+            while ( (((int) (x + 0.5)) >= 0) && (((int) (x + 0.5)) < dimx) &&
+                    (((int) (y + 0.5)) >= 0) && (((int) (y + 0.5)) < dimy) &&
+                    (((int) (z + 0.5)) >= 0) && (((int) (z + 0.5)) < dimz) &&
+                    (lbl_im[ I((int) (x + 0.5), (int) (y + 0.5), (int) (z + 0.5), dimx, dimy) ] == curr_lbl)
                     ) {
-                curr_status = in_im[ I((int) x, (int) y, (int) z, dimx, dimy)];
+                curr_status = in_im[ I((int) (x + 0.5), (int) (y + 0.5), (int) (z + 0.5), dimx, dimy) ];
 
                 // If we reach the object save coords:
                 if (curr_status != prec_status) {
@@ -509,7 +480,7 @@ int p3dBlobAnalysis(
             length = (end_x1 - end_x2)*(end_x1 - end_x2) +
                     (end_y1 - end_y2)*(end_y1 - end_y2) +
                     (end_z1 - end_z2)*(end_z1 - end_z2);
-            length = sqrt(length);
+            length = sqrt(length) + 1.0;
 
             // Add current length to array for this grid:
             v_length[ct_rot] = length*voxelsize;
@@ -540,15 +511,13 @@ int p3dBlobAnalysis(
         // Draw the axis lines (if required):
         if (star_im != NULL) {
             // Draw minor axis with label 2:
-            _drawline(in_im, lbl_im, curr_lbl, star_im,
-                    rot_theta[min_idx], rot_phi[min_idx],
-                    cen_i, cen_j, cen_k, dimx, dimy, dimz, 2);
+            _drawline(in_im, lbl_im, curr_lbl, star_im, rot_theta[min_idx], rot_phi[min_idx],
+                    (int) cen_i, (int) cen_j, (int) cen_k, dimx, dimy, dimz, 2);
             // Draw major axis with label 3:
-            _drawline(in_im, lbl_im, curr_lbl, star_im,
-                    rot_theta[max_idx], rot_phi[max_idx],
-                    cen_i, cen_j, cen_k, dimx, dimy, dimz, 3);
+            _drawline(in_im, lbl_im, curr_lbl, star_im, rot_theta[max_idx], rot_phi[max_idx],
+                    (int) cen_i, (int) cen_j, (int) cen_k, dimx, dimy, dimz, 3);
             // Draw center of mass with label 1:
-            star_im[ I(cen_i, cen_j, cen_k, dimx, dimy) ] = 1;
+            star_im[ I( (int) cen_i, (int) cen_j, (int) cen_k, dimx, dimy) ] = 1;
         }
 
         ///
@@ -598,6 +567,7 @@ int p3dBlobAnalysis(
 
         // Set ouput parameters:
 
+
         ///
         /// Volume:		
         ///
@@ -624,7 +594,7 @@ int p3dBlobAnalysis(
         /// the same volume as the blob, computed exploiting the
         /// inverse formula of the volume of a sphere:
         ///
-        out_stats->eq_sph[ct] = 2 * pow((3.0 * out_stats->volume[ct]) / (4.0 * M_PI), 1 / 3.0);
+        out_stats->eq_sph[ct] = 2 * pow((3.0 * out_stats->volume[ct] ) / (4.0 * M_PI), 1 / 3.0);
 
         ///
         /// Sphericity:
@@ -637,7 +607,7 @@ int p3dBlobAnalysis(
         /// smallest parallelepiped oriented according to image axis 
         /// containing the blob).
         ///
-        bb_vol = ((double) dist_x) * dist_y*dist_z;
+        bb_vol = ((double) dist_x) * ((double) dist_y) * ((double) dist_z);
         if (bb_vol > 0)
             out_stats->extent[ct] = volumes[ct] / bb_vol;
         else
@@ -763,6 +733,10 @@ int p3dBlobAnalysis(
     if (volumes != NULL) free(volumes);
     if (bbs != NULL) free(bbs);
 
+	if (rot_theta != NULL) free(rot_theta);
+    if (rot_phi != NULL) free(rot_phi);
+    if (v_length != NULL) free(v_length);
+
     // Return OK:
     return P3D_SUCCESS;
 
@@ -785,13 +759,6 @@ MEM_ERROR:
     if (v_length != NULL) free(v_length);
 
     // Return OK:
-    return P3D_MEM_ERROR;
+    return P3D_ERROR;
 
-/*AUTH_ERROR:
-
-    if (wr_log != NULL) {
-        wr_log("Pore3D - Authentication error: %s. Program will exit.", auth_code);
-    }
-
-    return P3D_AUTH_ERROR;*/
 }

@@ -1,30 +1,3 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
-
 #include <omp.h>
 
 #define _USE_MATH_DEFINES
@@ -32,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <time.h>
 
 #include <stdio.h>
 
@@ -168,7 +142,7 @@ ON_MEM_ERROR:
 int p3dMorphometricAnalysis(
         unsigned char* in_im, // IN: Input segmented (binary) volume
         unsigned char* msk_im,
-        struct MorphometricStats* out_stats, // OUT: Trabecular statistics
+        MorphometricStats* out_stats, // OUT: Trabecular statistics
         const int dimx,
         const int dimy,
         const int dimz,
@@ -176,7 +150,8 @@ int p3dMorphometricAnalysis(
         int (*wr_log)(const char*, ...)
         ) {
 
-    unsigned int s, t, i;
+    unsigned int s, t;
+	int i;
 
     // Indexes for volume scanning:
     double x, y, z;
@@ -209,20 +184,13 @@ int p3dMorphometricAnalysis(
     double tpd; // Tb.N  [mm^-1]
     double tps; // Tb.Sp [mm] 
 
+
     unsigned int iseed;
+	time_t tt;
 
 
     // Variables for rotation cycle:
     int ct_rot;
-
-
-    /*char auth_code;
-
-    //
-    // Authenticate:
-    //
-    auth_code = authenticate("p3dMorphometricAnalysis");
-    if (auth_code == '0') goto AUTH_ERROR;*/
 
     // Start tracking computational time:
     if (wr_log != NULL) {
@@ -232,7 +200,7 @@ int p3dMorphometricAnalysis(
     }
 
     // Init random seeds:
-    iseed = (unsigned int) time(NULL);
+    iseed = (unsigned int) time(&tt);
     srand(iseed);
 
     // Get BV/TV:
@@ -424,14 +392,6 @@ int p3dMorphometricAnalysis(
 
     // Return OK:
     return P3D_SUCCESS;
-
-/*AUTH_ERROR:
-
-    if (wr_log != NULL) {
-        wr_log("Pore3D - Authentication error: %s. Program will exit.", auth_code);
-    }
-
-    return P3D_AUTH_ERROR;*/
 }
 
 

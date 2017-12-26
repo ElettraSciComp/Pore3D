@@ -42,7 +42,7 @@ int fcoords_list_push (fcoords_list_t *list, fcoords_t item)
 		
 	/* Allocate memory for the new item: */
 	new_l = (fcoords_list_elem_t*) malloc (sizeof(fcoords_list_elem_t));
-	if ( new_l == NULL ) return P3D_MEM_ERROR;
+	if ( new_l == NULL ) return P3D_ERROR;
 
 	/* Push item into list: */
 	new_l->elem = item;

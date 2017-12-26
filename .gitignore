@@ -5,6 +5,10 @@
 [Tt]est/
 [Bb]oost*/
 [Dd]ist/
+P3D_Test/
+P3D_ITKWrapped*/
+pthreads/
+
 
 # Pore3D-specific files
 *.raw*

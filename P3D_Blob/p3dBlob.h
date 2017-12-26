@@ -1,30 +1,3 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -39,8 +12,8 @@ extern "C" {
 #define P3D_FALSE				-1 
 #define P3D_TRUE				1 
 
-#define P3D_AUTH_ERROR                          -1
-#define P3D_MEM_ERROR			NULL	/* Leave it NULL for simplify tests */
+#define P3D_ERROR				0
+#define P3D_MEM_ERROR			NULL	/* Leave it NULL to simplify tests */
 #define P3D_SUCCESS				2		/* Any number */
 
 #define BACKGROUND				0
@@ -63,12 +36,13 @@ extern "C" {
 #ifndef P3D_BLOB_MACROS
 #define P3D_BLOB_MACROS
 
-#define I(i,j,k,N,M)    ( (j)*(N) + (i) + (k)*(N)*(M) ) 
-#define MIN(x,y)        (((x) < (y))?(x):(y))
-#define MAX(x,y)        (((x) > (y))?(x):(y))
+	#define I(i,j,k,N,M)    ( (j)*(N) + (i) + (k)*(N)*(M) ) 
+	#define MIN(x,y)        (((x) < (y))?(x):(y))
+	#define MAX(x,y)        (((x) > (y))?(x):(y))
 
-    /* A sort of TRY-CATCH constructor: */
-#define P3D_TRY( function ) if ( (function) == P3D_MEM_ERROR) { goto MEM_ERROR; }
+	/* A sort of TRY-CATCH constructor: */
+	#define P3D_MEM_TRY( function ) if ( ((function) == P3D_MEM_ERROR) ) { goto MEM_ERROR; }
+	#define P3D_TRY( function ) if ( ((function) == P3D_ERROR) ) { goto MEM_ERROR; }
 #endif
 
 #ifndef P3D_BLOB_STRUCTS_DEFINED
@@ -88,29 +62,29 @@ extern "C" {
         double* volume;
     } BlobStats;
 
-    struct MorphometricStats {
+    typedef struct {
         double BvTv;
         double BsBv;
         double TbN;
         double TbTh;
         double TbSp;
-    };
+    } MorphometricStats;
 
-    struct AnisotropyStats {
+    typedef struct {
         double I; // Isotropy Index;
         double E; // Elongation Index;
-    };
+    } AnisotropyStats;
 
-    struct BasicStats {
+    typedef struct {
         double Vv;
         double Cv;
         double Mv;
         double Sv;
-    };
+    } BasicStats;
 
-    struct TextureStats {
+   typedef struct {
         double FD;
-    };
+    } TextureStats;
 
 #endif
 
@@ -131,7 +105,7 @@ extern "C" {
 
     int p3dBasicAnalysis(
             unsigned char* in_im,
-            struct BasicStats* out_stats,
+            BasicStats* out_stats,
             const int dimx,
             const int dimy,
             const int dimz,
@@ -141,7 +115,7 @@ extern "C" {
 
     int p3dTextureAnalysis(
             unsigned char* in_im,
-            struct TextureStats* out_stats,
+            TextureStats* out_stats,
             const int dimx,
             const int dimy,
             const int dimz,
@@ -151,7 +125,7 @@ extern "C" {
     int p3dAnisotropyAnalysis(
             unsigned char* in_im,
             unsigned char* msk_im,
-            struct AnisotropyStats* out_stats,
+            AnisotropyStats* out_stats,
             const int dimx,
             const int dimy,
             const int dimz,
@@ -163,7 +137,7 @@ extern "C" {
     int p3dMorphometricAnalysis(
             unsigned char* in_im, // IN: Input segmented (binary) volume
             unsigned char* msk_im,
-            struct MorphometricStats* out_stats, // OUT: Trabecular statistics
+            MorphometricStats* out_stats, // OUT: Trabecular statistics
             const int dimx,
             const int dimy,
             const int dimz,
@@ -257,7 +231,7 @@ extern "C" {
 
 	int p3dSquaredEuclideanDT(
         unsigned char* in_rev,
-        unsigned short* out_rev,
+        unsigned int* out_rev,
         const int dimx,
         const int dimy,
         const int dimz,

@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "p3dBlob.h"
+#include "p3dSkel.h"
 #include "p3dFilt.h"
 #include "p3dSkel.h"
 
@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
 	p3dReadRaw8 ( argv[1], in_im, dimx, dimy, dimz, customPrint, NULL);
 
 	// Filtering:
-	p3dBilateralFilter3D_8(in_im, out_im, dimx, dimy, dimz, 3, 1.0, 10.0, 50, customPrint, customProgress );
+	p3dGVFSkeletonization(in_im, out_im, dimx, dimy, dimz, 0.15, 1e-4, 0.0, 1.0, customPrint);
 	
 	// Output:
 	p3dWriteRaw8(out_im, argv[2], dimx, dimy, dimz, customPrint, NULL);

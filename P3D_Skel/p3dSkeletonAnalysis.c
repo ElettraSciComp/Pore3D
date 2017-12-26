@@ -1,40 +1,16 @@
-/***************************************************************************/
-/* (C) 2016 Elettra - Sincrotrone Trieste S.C.p.A.. All rights reserved.   */
-/*                                                                         */
-/*                                                                         */
-/* This file is part of Pore3D, a software library for quantitative        */
-/* analysis of 3D (volume) images.                                         */
-/*                                                                         */
-/* Pore3D is free software: you can redistribute it and/or modify it       */
-/* under the terms of the GNU General Public License as published by the   */
-/* Free Software Foundation, either version 3 of the License, or (at your  */
-/* option) any later version.                                              */
-/*                                                                         */
-/* Pore3D is distributed in the hope that it will be useful, but WITHOUT   */
-/* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or   */
-/* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License    */
-/* for more details.                                                       */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with Pore3D. If not, see <http://www.gnu.org/licenses/>.          */
-/*                                                                         */
-/***************************************************************************/
-
-//
-// Author: Francesco Brun
-// Last modified: Sept, 28th 2016
-//
-
 #include <omp.h>
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include <stdio.h>
 
 #include "p3dSkel.h"
 #include "p3dTime.h"
+//#include "p3dGraph.h"
 
 #include "Common/p3dBoundingBoxList.h"
 #include "Common/p3dConnectedComponentsLabeling.h"
@@ -56,7 +32,7 @@ int __p3dTmpWriteRaw8(
         printf("Cannot open output file %s.", filename);
         in_im = NULL;
 
-        return P3D_MEM_ERROR;
+        return P3D_ERROR;
     }
 
     /* Write raw data to file: */
@@ -180,6 +156,109 @@ int __p3dTmpWriteRaw16(
     return P3D_SUCCESS;
 }
 
+/*float _dijsktra(float* cost, int dim, int source, int target) {
+    float* dist = NULL;
+    int* prev = NULL;
+    int* selected = NULL;
+    char* path = NULL;
+
+    float min, d, out;
+    int i, m, start, ct;
+
+
+    P3D_TRY(dist = (float*) calloc(dim, sizeof (float)));
+    P3D_TRY(prev = (int*) calloc(dim, sizeof (int)));
+    P3D_TRY(selected = (int*) calloc(dim, sizeof (int)));
+    P3D_TRY(path = (char*) calloc(dim, sizeof (char)));
+
+    for (i = 0; i < dim; i++) {
+        dist[i] = (float) _DIJKSTRA_IN;
+        prev[i] = (float) _DIJKSTRA_IN;
+    }
+    start = source;
+    selected[start] = 1;
+    dist[start] = 0.0;
+
+    //while( selected[target] == 0 )
+    ct = 0;
+    // To avoid infinite loop in case of "imperfect network"
+    while ((start != target) && (ct < (2 * dim))) {
+        min = (float) _DIJKSTRA_IN;
+        m = 0;
+        for (i = 0; i < dim; i++) {
+            if (selected[i] == 0) {
+                d = dist[start] + cost[ I2(start, i, dim) ];
+                if (d < dist[i]) {
+                    dist[i] = d;
+                    prev[i] = start;
+                }
+                if (min > dist[i]) {
+                    min = dist[i];
+                    m = i;
+                }
+            }
+        }
+        start = m;
+        selected[start] = 1;
+        ct++;
+    }
+    if (ct >= (dim * dim))
+        out = -1.0;
+    else
+        out = dist[target];
+
+    if (dist != NULL) free(dist);
+    if (prev != NULL) free(prev);
+    if (selected != NULL) free(selected);
+    if (path != NULL) free(path);
+
+    return out;
+
+MEM_ERROR:
+
+    if (dist != NULL) free(dist);
+    if (prev != NULL) free(prev);
+    if (selected != NULL) free(selected);
+    if (path != NULL) free(path);
+
+    return 0.0;
+}*/
+
+/*double _computeTortousity(float* tort_matrix, float* tort_array, int dim,
+        int source, int dest) {
+    float dist, real_dist;
+    float a1, a2, b1, b2, c1, c2;
+    //int i, j;
+
+    // Get Euclidean distance:
+    a1 = tort_array [ I2(source, 0, dim) ];
+    a2 = tort_array [ I2(dest, 0, dim) ];
+    b1 = tort_array [ I2(source, 1, dim) ];
+    b2 = tort_array [ I2(dest, 1, dim) ];
+    c1 = tort_array [ I2(source, 2, dim) ];
+    c2 = tort_array [ I2(dest, 2, dim) ];
+    dist = (float) sqrt((a1 - a2)*(a1 - a2) + (b1 - b2)*(b1 - b2) + (c1 - c2)*(c1 - c2));
+
+    // Get real distance
+    real_dist = p3dShortestPath(tort_matrix, dim, source, dest);
+    //real_dist = _dijsktra(tort_matrix, dim, source, dest);
+
+    /*printf("Branch [%0.1f,%0.1f,%0.1f] - [%0.1f,%0.1f,%0.1f] = %0.1f / %0.1f\n", 
+    tort_array [ I2(source, 0, dim) ],
+    tort_array [ I2(source, 1, dim) ],
+    tort_array [ I2(source, 2, dim) ],
+    tort_array [ I2(dest, 0, dim) ],
+    tort_array [ I2(dest, 1, dim) ],
+    tort_array [ I2(dest, 2, dim) ],
+    real_dist, 
+    dist
+    );*/
+
+    /*if ( fabs( real_dist + 1.0 ) < 1E-4)
+        return -1.0;
+    else
+        return real_dist / dist;
+}*/
 
 int _findNode(
         unsigned short* im,
@@ -944,7 +1023,7 @@ int _p3dSkeletonAnalysis_EndPoints(
     double delta;
 
     // Allocate memory:
-    P3D_TRY(tmp_im = (unsigned short*) calloc(dimx * dimy*dimz, sizeof (unsigned short)));
+    P3D_MEM_TRY(tmp_im = (unsigned short*) calloc(dimx * dimy*dimz, sizeof (unsigned short)));
 
     // Fill the balls:
 #pragma omp parallel for private(i, j, rad, a, b, c, delta)
@@ -983,7 +1062,7 @@ int _p3dSkeletonAnalysis_EndPoints(
     // If there are endpoints:
     if (cc_array_numel != 0) {
         // Allocate memory for the distribution of widths on endpoints:
-        P3D_TRY(out_stats->End_Width = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->End_Width = (double*) malloc(cc_array_numel * sizeof (double)));
         out_stats->End_Counter = cc_array_numel;
 
         // Compute max width on endpoints:
@@ -1027,7 +1106,7 @@ MEM_ERROR:
     if (bbs != NULL) free(bbs);
     if (tmp_im != NULL) free(tmp_im);
 
-    return P3D_MEM_ERROR;
+    return P3D_ERROR;
 }
 
 int _p3dSkeletonAnalysis_NodePoints(
@@ -1062,8 +1141,8 @@ int _p3dSkeletonAnalysis_NodePoints(
 
 
     // Allocate memory:	
-    P3D_TRY(tmp_im = (unsigned short*) calloc(dimx * dimy*dimz, sizeof (unsigned short)));
-    P3D_TRY(tmp_roi = (unsigned short*) malloc(dimx * dimy * dimz * sizeof (unsigned short)));
+    P3D_MEM_TRY(tmp_im = (unsigned short*) calloc(dimx * dimy*dimz, sizeof (unsigned short)));
+    P3D_MEM_TRY(tmp_roi = (unsigned short*) malloc(dimx * dimy * dimz * sizeof (unsigned short)));
 
     // A ball is filled on each node voxel. The radius of this ball is the value of 
     // the distance transform on the node voxel. While, in principle, the medialness
@@ -1086,8 +1165,8 @@ int _p3dSkeletonAnalysis_NodePoints(
                     if (rad < 1) rad = 1;
 
                     // Scan the "squared" bounding box:
-                    for (c = k - rad; c <= k + rad; c++)
-                        for (b = j - rad; b <= j + rad; b++)
+                    for (c = k - rad; c <= k + rad; c++) {
+                        for (b = j - rad; b <= j + rad; b++) {
                             for (a = i - rad; a <= i + rad; a++) {
                                 // We are scanning the bounding box, so we need to be sure
                                 // if current position (a,b,c) is inside the ball:
@@ -1100,6 +1179,8 @@ int _p3dSkeletonAnalysis_NodePoints(
                                     nodes_im [ I(a, b, c, dimx, dimy) ] = OBJECT;
                                 }
                             }
+						}
+					}
                 }
             }
 
@@ -1118,11 +1199,11 @@ int _p3dSkeletonAnalysis_NodePoints(
         out_stats->ConnectivityDensity = (double) (cc_array_numel);
 
         // Allocate memory for the pore-thickness distribution:
-        P3D_TRY(out_stats->Node_Width = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->Node_Width = (double*) malloc(cc_array_numel * sizeof (double)));
         out_stats->Node_Counter = cc_array_numel;
 
         // Allocate memory for the coordination number distribution:
-        P3D_TRY(out_stats->CoordinationNumber = (int*) calloc(cc_array_numel, sizeof (int)));
+        P3D_MEM_TRY(out_stats->CoordinationNumber = (int*) calloc(cc_array_numel, sizeof (int)));
 
         // Compute pore thickness distribution for each pore (i.e. cluster of balls):
         for (ct = 0; ct < cc_array_numel; ct++) {
@@ -1134,8 +1215,8 @@ int _p3dSkeletonAnalysis_NodePoints(
             memset(tmp_roi, 0, dimx * dimy * dimz * sizeof (unsigned short));
 
             // Scan the bounding box of the cluster of balls:			
-            for (k = (curr_bb.min_z - offset); k <= (curr_bb.max_z + offset); k++)
-                for (j = (curr_bb.min_y - offset); j <= (curr_bb.max_y + offset); j++)
+            for (k = (curr_bb.min_z - offset); k <= (curr_bb.max_z + offset); k++) {
+                for (j = (curr_bb.min_y - offset); j <= (curr_bb.max_y + offset); j++) {
                     for (i = (curr_bb.min_x - offset); i <= (curr_bb.max_x + offset); i++) {
                         if ((i >= 0) && (j >= 0) && (k >= 0) &&
                                 (i < dimx) && (j < dimy) && (k < dimz)) {
@@ -1172,11 +1253,13 @@ int _p3dSkeletonAnalysis_NodePoints(
                                 tmp_roi[ I(i, j, k, dimx, dimy) ] = tmp_im[ I(i, j, k, dimx, dimy) ];
 
                         }
-                    }
+					}
+				}
+			}
 
             // Compute the coordination number re-scanning bounding box:
-            for (k = (curr_bb.min_z - offset); k <= (curr_bb.max_z + offset); k++)
-                for (j = (curr_bb.min_y - offset); j <= (curr_bb.max_y + offset); j++)
+            for (k = (curr_bb.min_z - offset); k <= (curr_bb.max_z + offset); k++) {
+                for (j = (curr_bb.min_y - offset); j <= (curr_bb.max_y + offset); j++) {
                     for (i = (curr_bb.min_x - offset); i <= (curr_bb.max_x + offset); i++) {
                         if ((i >= 0) && (j >= 0) && (k >= 0) &&
                                 (i < dimx) && (j < dimy) && (k < dimz)) {
@@ -1208,6 +1291,8 @@ int _p3dSkeletonAnalysis_NodePoints(
                             }
                         }
                     }
+				}
+			}
 
 
             // Create the pore image:            
@@ -1260,7 +1345,7 @@ MEM_ERROR:
     if (tmp_roi != NULL) free(tmp_roi);
 
 
-    return P3D_MEM_ERROR;
+    return P3D_ERROR;
 }
 
 int _p3dSkeletonAnalysis_NodeToNodeBranches(
@@ -1295,8 +1380,8 @@ int _p3dSkeletonAnalysis_NodeToNodeBranches(
     //
 
     // Allocate memory for temp image skeleton:
-    P3D_TRY(tmp_im = (unsigned char*) calloc(dimx * dimy*dimz, sizeof (unsigned char)));
-    P3D_TRY(tmp_im2 = (unsigned short*) calloc(dimx * dimy*dimz, sizeof (unsigned short)));
+    P3D_MEM_TRY(tmp_im = (unsigned char*) calloc(dimx * dimy*dimz, sizeof (unsigned char)));
+    P3D_MEM_TRY(tmp_im2 = (unsigned short*) calloc(dimx * dimy*dimz, sizeof (unsigned short)));
 
 
 
@@ -1324,10 +1409,10 @@ int _p3dSkeletonAnalysis_NodeToNodeBranches(
 
     if (cc_array_numel != 0) {
         // Allocate memory for the distribution of widths on endpoints:
-        P3D_TRY(out_stats->NodeToNode_Length = (double*) malloc(cc_array_numel * sizeof (double)));
-        P3D_TRY(out_stats->NodeToNode_MinWidth = (double*) malloc(cc_array_numel * sizeof (double)));
-        P3D_TRY(out_stats->NodeToNode_MeanWidth = (double*) malloc(cc_array_numel * sizeof (double)));
-        P3D_TRY(out_stats->NodeToNode_MaxWidth = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->NodeToNode_Length = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->NodeToNode_MinWidth = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->NodeToNode_MeanWidth = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->NodeToNode_MaxWidth = (double*) malloc(cc_array_numel * sizeof (double)));
 
         // Copy NODE-TO-END branches statistics to output structure:
         out_stats->NodeToNode_Counter = cc_array_numel;
@@ -1421,7 +1506,7 @@ MEM_ERROR:
     if (tmp_im != NULL) free(tmp_im);
     if (tmp_im2 != NULL) free(tmp_im2);
 
-    return P3D_MEM_ERROR;
+    return P3D_ERROR;
 }
 
 int _p3dSkeletonAnalysis_NodeToEndBranches(
@@ -1455,8 +1540,8 @@ int _p3dSkeletonAnalysis_NodeToEndBranches(
     //
 
     // Allocate memory for temp image skeleton:
-    P3D_TRY(tmp_im = (unsigned char*) calloc(dimx * dimy*dimz, sizeof (unsigned char)));
-    P3D_TRY(tmp_im2 = (unsigned short*) calloc(dimx * dimy*dimz, sizeof (unsigned short)));
+    P3D_MEM_TRY(tmp_im = (unsigned char*) calloc(dimx * dimy*dimz, sizeof (unsigned char)));
+    P3D_MEM_TRY(tmp_im2 = (unsigned short*) calloc(dimx * dimy*dimz, sizeof (unsigned short)));
 
 
     // Create temporary matrix removing the filled balls. Doing so, only the part of a 
@@ -1484,10 +1569,10 @@ int _p3dSkeletonAnalysis_NodeToEndBranches(
 
     if (cc_array_numel != 0) {
         // Allocate memory for the distribution of widths on endpoints:
-        P3D_TRY(out_stats->NodeToEnd_Length = (double*) malloc(cc_array_numel * sizeof (double)));
-        P3D_TRY(out_stats->NodeToEnd_MinWidth = (double*) malloc(cc_array_numel * sizeof (double)));
-        P3D_TRY(out_stats->NodeToEnd_MeanWidth = (double*) malloc(cc_array_numel * sizeof (double)));
-        P3D_TRY(out_stats->NodeToEnd_MaxWidth = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->NodeToEnd_Length = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->NodeToEnd_MinWidth = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->NodeToEnd_MeanWidth = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->NodeToEnd_MaxWidth = (double*) malloc(cc_array_numel * sizeof (double)));
 
         // Copy NODE-TO-END branches statistics to output structure:
         out_stats->NodeToEnd_Counter = cc_array_numel;
@@ -1553,7 +1638,7 @@ MEM_ERROR:
     if (tmp_im != NULL) free(tmp_im);
     if (tmp_im2 != NULL) free(tmp_im2);
 
-    return P3D_MEM_ERROR;
+    return P3D_ERROR;
 }
 
 int _p3dSkeletonAnalysis_EndToEndBranches(
@@ -1588,8 +1673,8 @@ int _p3dSkeletonAnalysis_EndToEndBranches(
     //
 
     // Allocate memory for labeled skeleton:
-    P3D_TRY(tmp_im = (unsigned char*) malloc(dimx * dimy * dimz * sizeof (unsigned char)));
-    P3D_TRY(tmp_im2 = (unsigned short*) malloc(dimx * dimy * dimz * sizeof (unsigned short)));
+    P3D_MEM_TRY(tmp_im = (unsigned char*) malloc(dimx * dimy * dimz * sizeof (unsigned char)));
+    P3D_MEM_TRY(tmp_im2 = (unsigned short*) malloc(dimx * dimy * dimz * sizeof (unsigned short)));
 
 
     // Set memory of tmp_im:
@@ -1619,10 +1704,10 @@ int _p3dSkeletonAnalysis_EndToEndBranches(
 
     if (cc_array_numel != 0) {
         // Allocate memory for the distribution of widths on endpoints:
-        P3D_TRY(out_stats->EndToEnd_Length = (double*) malloc(cc_array_numel * sizeof (double)));
-        P3D_TRY(out_stats->EndToEnd_MinWidth = (double*) malloc(cc_array_numel * sizeof (double)));
-        P3D_TRY(out_stats->EndToEnd_MeanWidth = (double*) malloc(cc_array_numel * sizeof (double)));
-        P3D_TRY(out_stats->EndToEnd_MaxWidth = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->EndToEnd_Length = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->EndToEnd_MinWidth = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->EndToEnd_MeanWidth = (double*) malloc(cc_array_numel * sizeof (double)));
+        P3D_MEM_TRY(out_stats->EndToEnd_MaxWidth = (double*) malloc(cc_array_numel * sizeof (double)));
 
         // Copy NODE-TO-END branches statistics to output structure:
         out_stats->EndToEnd_Counter = cc_array_numel;
@@ -1680,9 +1765,556 @@ MEM_ERROR:
     if (tmp_im != NULL) free(tmp_im);
     if (tmp_im2 != NULL) free(tmp_im2);
 
-    return P3D_MEM_ERROR;
+    return P3D_ERROR;
 }
 
+int _p3dSkeletonAnalysis_Tortousity(
+        unsigned char* vol_im, // IN: Input segmented (binary) volume
+        unsigned short* dt_im, // IN: Input squared euclidean distance transform of vol_im
+        unsigned char* lbl_skl_im, // IN: Input labeled skeleton of the segmented volume
+        unsigned char* pores_im, // OUT: Image with only the maximal balls for pores
+        unsigned char* ends_im, // IN: Input image of identified nodes with merging criteria
+        struct SkeletonStats* out_stats, // OUT: Skeleton statistics
+        const int dimx,
+        const int dimy,
+        const int dimz,
+        const int tortuosity_depth
+        ) {
+
+    unsigned short* tmp_im = NULL;
+    unsigned short* tmp_im2 = NULL;
+    unsigned char* poresplusend_im = NULL;
+
+    float* tort_matrix = NULL;
+    float* tort_array = NULL;
+    int* min_ct_array = NULL;
+    int* max_ct_array = NULL;
+    int* coord_array = NULL;
+
+    double max_width, dist1, dist2;
+
+    int cc_array_numel;
+    double cc_length; //, min, max;
+    int max_i, max_j, max_k;
+    unsigned int* cc_array = NULL;
+
+    bb_t* bbs = NULL;
+    bb_t curr_bb, curr_bb2;
+    int i, j, k, a, b, c, r, s, t, ct/*, ct_num_nodes*/;
+    double cen_i, cen_j, cen_k;
+    int cen_ct;
+    coords_t coords;
+
+    int other_lbl;
+    int offset = 1; // Extra-marging for bounding box
+
+    int aa = 0;
+    //int flag;
+    int num_nodes = tortuosity_depth;
+
+
+    // Allocate memory:	
+    P3D_MEM_TRY(poresplusend_im = (unsigned char*) calloc(dimx * dimy * dimz, sizeof (unsigned char)));
+    P3D_MEM_TRY(tmp_im = (unsigned short*) calloc(dimx * dimy * dimz, sizeof (unsigned short)));
+    P3D_MEM_TRY(tmp_im2 = (unsigned short*) calloc(dimx * dimy * dimz, sizeof (unsigned short)));
+
+    // Create an additional image with pores and also ends:
+    for (ct = 0; ct < (dimx * dimy * dimz); ct++) {
+        if ((pores_im[ ct ] != BACKGROUND) || (ends_im[ ct ] != BACKGROUND)) {
+            // Assign temporary image:
+            poresplusend_im[ ct ] = UCHAR_MAX;
+        }
+    }
+    /*for (ct = 0; ct < (dimx * dimy * dimz); ct++) {
+        if ((lbl_skl_im[ ct ] != NODE_LABEL) || (lbl_skl_im[ ct ] != END_LABEL)) {
+            // Assign temporary image:
+            poresplusend_im[ ct ] = UCHAR_MAX;
+        }
+    }*/
+
+    // Get a labeled image for the pores:    
+    P3D_TRY(p3dConnectedComponentsLabeling(poresplusend_im, tmp_im, &cc_array_numel, &cc_array, &bbs,
+            dimx, dimy, dimz, CONN6, P3D_FALSE));
+    //P3D_TRY(p3dConnectedComponentsLabeling(pores_im, tmp_im, &cc_array_numel, &cc_array, &bbs,
+    //	dimx, dimy, dimz, CONN6, P3D_FALSE));
+
+    //__p3dTmpWriteRaw16 ( tmp_im, "R:\\TEMP\\Pipp_tmp.raw", dimx, dimy, dimz, P3D_TRUE, P3D_TRUE, NULL, NULL );
+
+    // Create a second temporary copy of the image. At this point, tmp_im is unsigned 
+    // short with labeled pores and lbl_skl_im is unsigned short with classification 
+    // of branches. Now, tmp_im2 is created with the labeled pores (direct copy from 
+    // tmp_im) and NODE-TO-NODE and NODE-TO-END assigned to USHRT_MAX:
+    for (ct = 0; ct < (dimx * dimy * dimz); ct++) {
+        if ((lbl_skl_im[ ct ] == ENDTOEND_LABEL) ||
+                (lbl_skl_im[ ct ] == NODETOEND_LABEL) ||
+                (lbl_skl_im[ ct ] == NODETONODE_LABEL))
+            //(lbl_skl_im[ ct ] == NODE_LABEL) )		            
+            tmp_im2[ ct ] = USHRT_MAX;
+        if (tmp_im[ ct ] != BACKGROUND)
+            tmp_im2[ ct ] = tmp_im[ ct ];
+
+    }
+
+
+    // If there are pores:
+    if (cc_array_numel != 0) {
+
+        // Allocate memory for saving the center of mass of each pore:
+        P3D_MEM_TRY(tort_matrix = (float*) calloc(cc_array_numel * cc_array_numel, sizeof (float)));
+        P3D_MEM_TRY(tort_array = (float*) calloc(cc_array_numel * 4, sizeof (float)));
+        P3D_MEM_TRY(coord_array = (int*) calloc(cc_array_numel, sizeof (int)));
+
+        // For each pore:
+        for (ct = 0; ct < cc_array_numel; ct++) {
+            //for (ct = (cc_array_numel - 1); ct >= 0; ct--) {
+
+            // Initialize the variable that will contain the value for thickness:
+            max_width = 0.0;
+
+            // Get the current bounding box:
+            curr_bb = bbs[ct];
+
+            cen_i = 0;
+            cen_j = 0;
+            cen_k = 0;
+            cen_ct = 0;
+
+            // Scan the bounding box of current pore:			
+            for (k = (curr_bb.min_z - offset); k <= (curr_bb.max_z + offset); k++)
+                for (j = (curr_bb.min_y - offset); j <= (curr_bb.max_y + offset); j++)
+                    for (i = (curr_bb.min_x - offset); i <= (curr_bb.max_x + offset); i++) {
+                        if ((i >= 0) && (j >= 0) && (k >= 0) &&
+                                (i < dimx) && (j < dimy) && (k < dimz)) {
+                            if (tmp_im[ I(i, j, k, dimx, dimy) ] == ((unsigned short) (ct + 3))) {
+                                // The maximum value of the distance transform is assumed as pore
+                                // thickness. This value is not necessarily the value of the distance
+                                // transform on one of the skeleton nodes that have originated the 
+                                // cluster. We should record also the position of this maximum.
+                                if (((float) (dt_im [ I(i, j, k, dimx, dimy) ])) > max_width) {
+                                    max_width = (float) dt_im [ I(i, j, k, dimx, dimy) ];
+                                    max_i = i;
+                                    max_j = j;
+                                    max_k = k;
+                                }
+
+                                // Compute also the center of mass of this pore:
+                                cen_i += (float) i;
+                                cen_j += (float) j;
+                                cen_k += (float) k;
+                                cen_ct++;
+                            }
+                        }
+                    }
+
+            // Baricenter:				
+            cen_i = cen_i / ((float) (cen_ct));
+            cen_j = cen_j / ((float) (cen_ct));
+            cen_k = cen_k / ((float) (cen_ct));
+            //printf("Baricenter1 = (%0.3f, %0.3f, %0.3f)\n", cen_i, cen_j, cen_k);
+
+            tort_array[ I2(ct, 0, cc_array_numel) ] = (float) cen_i;
+            tort_array[ I2(ct, 1, cc_array_numel) ] = (float) cen_j;
+            tort_array[ I2(ct, 2, cc_array_numel) ] = (float) cen_k;
+            tort_array[ I2(ct, 3, cc_array_numel) ] = (float) max_width;
+
+            // Compute the length for further assessment of tortuosity by re-scanning bounding box:
+            for (k = (curr_bb.min_z - offset); k <= (curr_bb.max_z + offset); k++)
+                for (j = (curr_bb.min_y - offset); j <= (curr_bb.max_y + offset); j++)
+                    for (i = (curr_bb.min_x - offset); i <= (curr_bb.max_x + offset); i++) {
+                        if ((i >= 0) && (j >= 0) && (k >= 0) &&
+                                (i < dimx) && (j < dimy) && (k < dimz)) {
+                            // If a branch is found (USHRT_MAX voxel):
+                            if (tmp_im2[ I(i, j, k, dimx, dimy) ] == USHRT_MAX) {
+                                // Check if the branch voxel is connected to the pore ball:
+                                if (_countNeighbors(tmp_im2, dimx, dimy, dimz, i, j, k,
+                                        (unsigned short) (ct + 3)) >= 1) {
+                                    // This counter is not coordination number because
+                                    // the branches are removed after their identification
+                                    // in order to speed up the computation:
+                                    coord_array[ct]++;
+
+                                    // At this point we know the first skeleton voxel "in touch"
+                                    // with pore ball and we still know the baricenter, so let's
+                                    // compute the euclidean distance from this two points since
+                                    // this value could be greater than the size of the maximal ball:
+                                    //printf("Dist1 = (%d, %d, %d)\n", i, j, k);
+                                    dist1 = sqrt((i * 1.0 - cen_i)*(i * 1.0 - cen_i) +
+                                            (j * 1.0 - cen_j)*(j * 1.0 - cen_j) +
+                                            (k * 1.0 - cen_k)*(k * 1.0 - cen_k));
+
+                                    // Now that we are close to the border with current node, go 
+                                    // and run along the branch, removing it in order to avoid 
+                                    // counting the considered segment more than once:			
+                                    tmp_im2[ I(i, j, k, dimx, dimy) ] = BACKGROUND;
+
+                                    cc_length = 0.0;
+
+                                    // Go until the end:
+                                    a = i;
+                                    b = j;
+                                    c = k;
+                                    while (_findNeighbor(tmp_im2, dimx, dimy, dimz, a, b, c, &coords) != 0) {
+
+                                        // Count the length with Euclidean criteria:
+                                        cc_length += sqrt((double) ((a - coords.x)*(a - coords.x) +
+                                                (b - coords.y)*(b - coords.y) +
+                                                (c - coords.z)*(c - coords.z)));
+                                        //printf("cc_length = %0.3f\n", cc_length );
+
+
+                                        a = coords.x;
+                                        b = coords.y;
+                                        c = coords.z;
+                                        tmp_im2[ I(a, b, c, dimx, dimy) ] = BACKGROUND;
+                                    }
+
+                                    // At this point (a,b,c) are the coordinates of the last point
+                                    // "in touch" with the other pore ball. Again we have to compute 
+                                    // the euclidean distance from this point and the baricenter of
+                                    // the destination pore since this value could be greater than 
+                                    // the size of the maximal ball. So let's first compute the baricenter
+                                    // of the destination pore:
+
+                                    // Get the destination pore:
+                                    other_lbl = _findNode(tmp_im2, dimx, dimy, dimz, a, b, c) - 3;
+
+                                    // Get its bounding box:
+                                    curr_bb2 = bbs[other_lbl];
+
+                                    cen_i = 0;
+                                    cen_j = 0;
+                                    cen_k = 0;
+                                    cen_ct = 0;
+
+                                    // Scan the bounding box of destination pore:
+                                    for (t = (curr_bb2.min_z - offset); t <= (curr_bb2.max_z + offset); t++)
+                                        for (s = (curr_bb2.min_y - offset); s <= (curr_bb2.max_y + offset); s++)
+                                            for (r = (curr_bb2.min_x - offset); r <= (curr_bb2.max_x + offset); r++) {
+                                                if ((r >= 0) && (s >= 0) && (t >= 0) &&
+                                                        (r < dimx) && (s < dimy) && (t < dimz)) {
+                                                    if (tmp_im[ I(r, s, t, dimx, dimy) ] == ((unsigned short) (other_lbl + 3))) {
+
+                                                        // Compute also the center of mass of this pore:
+                                                        cen_i += (float) r;
+                                                        cen_j += (float) s;
+                                                        cen_k += (float) t;
+                                                        cen_ct++;
+                                                    }
+                                                }
+                                            }
+
+                                    cen_i = cen_i / ((float) (cen_ct));
+                                    cen_j = cen_j / ((float) (cen_ct));
+                                    cen_k = cen_k / ((float) (cen_ct));
+
+                                    // Compute the Euclidean distance:
+                                    //printf("Baricenter2 = (%0.3f, %0.3f, %0.3f)\n", cen_i, cen_j, cen_k);
+                                    //printf("Dist2 = (%d, %d, %d)\n", a, b, c);
+                                    dist2 = sqrt((a * 1.0 - cen_i)*(a * 1.0 - cen_i) +
+                                            (b * 1.0 - cen_j)*(b * 1.0 - cen_j) +
+                                            (c * 1.0 - cen_k)*(c * 1.0 - cen_k));
+
+
+
+                                    cc_length += (dist1 + dist2 + 2*sqrt(3.0));
+                                    //wr_log("\tfrom: %d, to: %d, length: %0.3f + 0.3f + 0.3f\n", ct, other_lbl, cc_length, dist1, dist2);
+                                    //printf("from: %d, to: %d, length: %0.3f + %0.3f + %0.3f\n", ct, other_lbl, cc_length, dist1, dist2);
+
+                                    if ( fabs(cc_length - 0.0) < 1E-4)
+                                        cc_length = 1.0;
+
+                                    // Now add cc_length to output matrix:		
+                                    if ((other_lbl != -3) && (ct != other_lbl)) {
+                                        if ( fabs(tort_matrix[ I2(ct, other_lbl, cc_array_numel) ] - 0.0) < 1E-4) {
+                                            tort_matrix[ I2(ct, other_lbl, cc_array_numel) ] = (float) cc_length;
+                                            //printf("%d - from: %d, to: %d, length: %0.3f\n", aa++, ct, other_lbl, cc_length);
+                                        } else {
+                                            if (cc_length < tort_matrix[ I2(ct, other_lbl, cc_array_numel) ]) {
+                                                tort_matrix[ I2(ct, other_lbl, cc_array_numel) ] = (float) cc_length;
+                                                //printf("%d - from: %d, to: %d, length: %0.3f\n", aa++, ct, other_lbl, cc_length);
+                                            }
+                                            //aa++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+        }
+
+        // Correct tort_matrix and prepare it for Dijkstra:
+        for (i = 0; i < cc_array_numel; i++) {
+            for (j = 0; j < cc_array_numel; j++) {
+                if (i == j) {
+                    tort_matrix[ I2(i, j, cc_array_numel) ] = 0.0;
+                } /*else {
+                    if (abs(tort_matrix[ I2(i, j, cc_array_numel) ] - 0.0) < 1E-4) {
+                        /*tort_matrix[ I2(i, j, cc_array_numel) ] += (float) sqrt(tort_array[ I2(i, 3, cc_array_numel) ] / 2.0);
+                        tort_matrix[ I2(i, j, cc_array_numel) ] += (float) sqrt(tort_array[ I2(j, 3, cc_array_numel) ] / 2.0);
+                        //tort_matrix[ I2( i, j, cc_array_numel) ]*= (float) 1.0;	
+                    } else {
+                        tort_matrix[ I2(i, j, cc_array_numel) ] = (float) (_DIJKSTRA_IN);
+                    }
+                }*/
+            }
+        }
+
+        // Make symmetric:
+        for (i = 0; i < cc_array_numel; i++) {
+            for (j = 0; j < cc_array_numel; j++) {
+                if ((j > i) && !((fabs(tort_matrix[ I2(i, j, cc_array_numel) ] - 0.0) < 1E-4))) {
+                    tort_matrix[ I2(j, i, cc_array_numel) ] = tort_matrix[ I2(i, j, cc_array_numel) ];
+                }
+                if ((j < i) && !((fabs(tort_matrix[ I2(i, j, cc_array_numel) ] - 0.0) < 1E-4))) {
+                    tort_matrix[ I2(j, i, cc_array_numel) ] = tort_matrix[ I2(i, j, cc_array_numel) ];
+                }
+            }
+        }
+
+        //printf("Array of dim %d:\n", cc_array_numel);
+        /*for ( i = 0; i < cc_array_numel; i++ )
+        {
+        printf("%0.1f %0.1f %0.1f - %0.1f\n", tort_array [ I2(i, 0, cc_array_numel) ], 
+                tort_array [ I2(i, 1, cc_array_numel) ], tort_array [ I2(i, 2, cc_array_numel) ], 
+                tort_array [ I2(i, 3, cc_array_numel) ] );
+        }
+			
+			
+        fvol = fopen("R:\\TEMP\\matrix.dat", "wb");
+        //printf("Matrix of %d x %d:\n", cc_array_numel, cc_array_numel);
+        for ( i = 0; i < cc_array_numel; i++ )
+        {
+                for ( j = 0; j < cc_array_numel; j++ )
+                {
+                        if ( tort_matrix[ I2(i, j, cc_array_numel) ] == _DIJKSTRA_IN )
+                        {
+                                //printf("-1.0 ");
+                                fprintf(fvol,"%0.1f ",0.0);
+                                //fwrite(-1.0f, sizeof (float), 1, fvol);
+                        }
+                        else
+                        {
+                                //printf("%0.1f ");
+                                fprintf(fvol,"%0.1f ",tort_matrix[ I2(i, j, cc_array_numel) ]);
+                                //fwrite( (float) (tort_matrix[ I2(i, j, cc_array_numel) ]), sizeof (float), 1, fvol);
+                        }
+                }
+                //printf("\n");	
+                fprintf(fvol,"%s",";\n");
+        }
+        fclose(fvol);*/
+
+        //out_stats->Tort_Z = _computeTortousity( tort_matrix, tort_array, cc_array_numel, 0, 5 );
+
+        //
+        // Compute actual tortuosity:
+        //					
+
+        // Check if tortousity depth is greater than the square of number of nodes:
+        /*num_nodes = (int) sqrt( (float) (MIN(num_nodes*num_nodes, cc_array_numel)));
+        out_stats->Tort_Counter = num_nodes*num_nodes;
+
+        // Allocate memory:
+        P3D_MEM_TRY(min_ct_array = (int*) calloc(num_nodes, sizeof (int)));
+        P3D_MEM_TRY(max_ct_array = (int*) calloc(num_nodes, sizeof (int)));
+
+        P3D_MEM_TRY(out_stats->Tort_X = (double*) calloc(out_stats->Tort_Counter, sizeof (double)));
+        P3D_MEM_TRY(out_stats->Tort_Y = (double*) calloc(out_stats->Tort_Counter, sizeof (double)));
+        P3D_MEM_TRY(out_stats->Tort_Z = (double*) calloc(out_stats->Tort_Counter, sizeof (double)));*/
+
+
+        //
+        // Turtousity along X:
+        //
+
+        // Get num_nodes minimum and maximum values along x (num_nodes is at
+        // least 1 and no more than a threshold):
+        /*for (ct_num_nodes = 0; ct_num_nodes < num_nodes; ct_num_nodes++) {
+            min = (float) (INT_MAX);
+            max = -1.0;
+
+            // Scan the array:
+            for (ct = 0; ct < cc_array_numel; ct++) {
+                // Check if probable new min is actually one the previous mins:
+                flag = P3D_FALSE;
+                for (k = 0; k <= (ct_num_nodes - 1); k++)
+                    if (min_ct_array[k] == ct)
+                        flag = P3D_TRUE;
+                // If it's not a previous min save it:
+                if (flag == P3D_FALSE) {
+                    if (tort_array[ I2(ct, 0, cc_array_numel) ] < min) {
+                        min = tort_array[ I2(ct, 0, cc_array_numel) ];
+                        min_ct_array[ct_num_nodes] = ct;
+                    }
+                }
+                // Check if probable new max is actually one the previous mins:
+                flag = P3D_FALSE;
+                for (k = 0; k <= (ct_num_nodes - 1); k++)
+                    if (max_ct_array[k] == ct)
+                        flag = P3D_TRUE;
+                // If it's not a previous max save it:
+                if (flag == P3D_FALSE) {
+                    if (tort_array[ I2(ct, 0, cc_array_numel) ] > max) {
+
+                        max = tort_array[ I2(ct, 0, cc_array_numel) ];
+                        max_ct_array[ct_num_nodes] =  ct;
+                    }
+                }
+            }
+        }
+
+        // Compute tortousity in X:		
+        ct = 0;
+        for (i = 0; i < num_nodes; i++) {
+            for (j = 0; j < num_nodes; j++) {
+                out_stats->Tort_X[ct++] = _computeTortousity(tort_matrix, tort_array,
+                        cc_array_numel, min_ct_array[i], max_ct_array[j]);
+            }
+        }
+
+
+
+        //
+        // Tortousity along Y:
+        //
+
+        // Get num_nodes minimum and maximum values along x (num_nodes is at
+        // least 1 and no more than a threshold):
+        // Get num_nodes minimum and maximum values along x (num_nodes is at
+        // least 1 and no more than a threshold):
+        for (ct_num_nodes = 0; ct_num_nodes < num_nodes; ct_num_nodes++) {
+            min = (float) (INT_MAX);
+            max = -1.0;
+
+            // Scan the array:
+            for (ct = 0; ct < cc_array_numel; ct++) {
+                // Check if probable new min is actually one the previous mins:
+                flag = P3D_FALSE;
+                for (k = 0; k <= (ct_num_nodes - 1); k++)
+                    if (min_ct_array[k] == ct)
+                        flag = P3D_TRUE;
+                // If it's not a previous min save it:
+                if (flag == P3D_FALSE) {
+                    if (tort_array[ I2(ct, 1, cc_array_numel) ] < min) {
+                        min = tort_array[ I2(ct, 1, cc_array_numel) ];
+                        min_ct_array[ct_num_nodes] = ct;
+                    }
+                }
+                // Check if probable new max is actually one the previous mins:
+                flag = P3D_FALSE;
+                for (k = 0; k <= (ct_num_nodes - 1); k++)
+                    if (max_ct_array[k] == ct)
+                        flag = P3D_TRUE;
+                // If it's not a previous max save it:
+                if (flag == P3D_FALSE) {
+                    if (tort_array[ I2(ct, 1, cc_array_numel) ] > max) {
+                        max = tort_array[ I2(ct, 1, cc_array_numel) ];
+                        max_ct_array[ct_num_nodes] = ct;
+                    }
+                }
+            }
+        }
+
+        // Compute tortousity in Y:		
+        ct = 0;
+        for (i = 0; i < num_nodes; i++)
+            for (j = 0; j < num_nodes; j++) {
+                out_stats->Tort_Y[ct++] = _computeTortousity(tort_matrix, tort_array,
+                        cc_array_numel, min_ct_array[i], max_ct_array[j]);
+            }
+
+
+        //
+        // Tortousity along Z:
+        //
+
+        // Get num_nodes minimum and maximum values along Z (num_nodes is at
+        // least 1 and no more than a threshold):
+        for (ct_num_nodes = 0; ct_num_nodes < num_nodes; ct_num_nodes++) {
+            min = (float) (INT_MAX);
+            max = -1.0;
+
+            // Scan the array:
+            for (ct = 0; ct < cc_array_numel; ct++) {
+                // Check if probable new min is actually one the previous mins:
+                flag = P3D_FALSE;
+                for (k = 0; k <= (ct_num_nodes - 1); k++)
+                    if (min_ct_array[k] == ct)
+                        flag = P3D_TRUE;
+                // If it's not a previous min save it:
+                if (flag == P3D_FALSE) {
+                    if (tort_array[ I2(ct, 2, cc_array_numel) ] < min) {
+                        min = tort_array[ I2(ct, 2, cc_array_numel) ];
+                        min_ct_array[ct_num_nodes] = ct;
+                    }
+                }
+                // Check if probable new max is actually one the previous mins:
+                flag = P3D_FALSE;
+                for (k = 0; k <= (ct_num_nodes - 1); k++)
+                    if (max_ct_array[k] == ct)
+                        flag = P3D_TRUE;
+                // If it's not a previous max save it:
+                if (flag == P3D_FALSE) {
+                    if (tort_array[ I2(ct, 2, cc_array_numel) ] > max) {
+                        max = tort_array[ I2(ct, 2, cc_array_numel) ];
+                        max_ct_array[ct_num_nodes] = ct;
+                    }
+                }
+            }
+        }
+
+
+        // Compute tortousity in Z:		
+        ct = 0;
+        for (i = 0; i < num_nodes; i++)
+            for (j = 0; j < num_nodes; j++)
+                out_stats->Tort_Z[ct++] = _computeTortousity(tort_matrix, tort_array,
+                    cc_array_numel, min_ct_array[i], max_ct_array[j]);
+		*/
+
+    } else {
+        // Copy empty statistics to output structure:
+        out_stats->Node_Counter = 0;
+        out_stats->Node_Width = NULL;
+        out_stats->ConnectivityDensity = 0.0;
+
+       /* out_stats->Tort_Counter = 0;
+        out_stats->Tort_X = NULL;
+        out_stats->Tort_Y = NULL;
+        out_stats->Tort_Z = NULL;*/
+    }
+
+    // Release resources:
+    if (cc_array != NULL) free(cc_array);
+    if (bbs != NULL) free(bbs);
+    if (tmp_im != NULL) free(tmp_im);
+    if (tmp_im2 != NULL) free(tmp_im2);
+    if (poresplusend_im != NULL) free(poresplusend_im);
+    if (tort_matrix != NULL) free(tort_matrix);
+    if (tort_array != NULL) free(tort_array);
+    if (min_ct_array != NULL) free(min_ct_array);
+    if (max_ct_array != NULL) free(max_ct_array);
+    if (coord_array != NULL) free(coord_array);
+
+    return P3D_SUCCESS;
+
+MEM_ERROR:
+
+    // Release resources:
+    if (cc_array != NULL) free(cc_array);
+    if (bbs != NULL) free(bbs);
+    if (tmp_im != NULL) free(tmp_im);
+    if (tmp_im2 != NULL) free(tmp_im2);
+    if (poresplusend_im != NULL) free(poresplusend_im);
+    if (tort_matrix != NULL) free(tort_matrix);
+    if (tort_array != NULL) free(tort_array);
+    if (min_ct_array != NULL) free(min_ct_array);
+    if (max_ct_array != NULL) free(max_ct_array);
+    if (coord_array != NULL) free(coord_array);
+
+    return P3D_ERROR;
+}
 
 int p3dSkeletonAnalysis(
         unsigned char* vol_im, // IN: Input segmented (binary) volume
@@ -1696,9 +2328,11 @@ int p3dSkeletonAnalysis(
         const int dimy,
         const int dimz,
         const double merging_factor,
+        const int tortuosity_depth,
         const double voxelsize, // IN: voxel resolution
         int (*wr_log)(const char*, ...)
-        ) {
+        ) 
+{
 
     // Temporary matrices:
     unsigned char* max_skl_im;
@@ -1709,12 +2343,12 @@ int p3dSkeletonAnalysis(
     double mean_sqr = 0.0;
     double glob_mean = 0.0;
     double glob_mean_sqr = 0.0;
-    int ct, i, j;
+    int /*i,j,*/ct;
     int flag_nodes_null = P3D_FALSE;
     int flag_pores_null = P3D_FALSE;
     int flag_ends_null = P3D_FALSE;
     int flag_throats_null = P3D_FALSE;
-
+	
 
     // Start tracking computational time:
     if (wr_log != NULL) {
@@ -1722,30 +2356,31 @@ int p3dSkeletonAnalysis(
         wr_log("Pore3D - Performing skeleton analysis...");
         wr_log("\tVoxelsize: %0.6f mm.", voxelsize);
         wr_log("\tMerging factor: %0.2f.", merging_factor);
+        //wr_log("\tTortuosity depth: %d.", tortuosity_depth);
     }
 
 
     // Allocate memory:
     if (nodes_im == NULL) {
         flag_nodes_null = P3D_TRUE;
-        P3D_TRY(nodes_im = (unsigned char*) calloc(dimx * dimy*dimz, sizeof (unsigned char)));
+        P3D_MEM_TRY(nodes_im = (unsigned char*) calloc(dimx * dimy*dimz, sizeof (unsigned char)));
     }
     if (pores_im == NULL) {
         flag_pores_null = P3D_TRUE;
-        P3D_TRY(pores_im = (unsigned char*) calloc(dimx * dimy*dimz, sizeof (unsigned char)));
+        P3D_MEM_TRY(pores_im = (unsigned char*) calloc(dimx * dimy*dimz, sizeof (unsigned char)));
     }
     if (ends_im == NULL) {
         flag_ends_null = P3D_TRUE;
-        P3D_TRY(ends_im = (unsigned char*) calloc(dimx * dimy*dimz, sizeof (unsigned char)));
+        P3D_MEM_TRY(ends_im = (unsigned char*) calloc(dimx * dimy*dimz, sizeof (unsigned char)));
     }
     if (throats_im == NULL) {
         flag_throats_null = P3D_TRUE;
-        P3D_TRY(throats_im = (unsigned char*) calloc(dimx * dimy*dimz, sizeof (unsigned char)));
+        P3D_MEM_TRY(throats_im = (unsigned char*) calloc(dimx * dimy*dimz, sizeof (unsigned char)));
     }
 
-    P3D_TRY(dt_im = (unsigned short*) malloc(dimx * dimy * dimz * sizeof (unsigned short)));
-    P3D_TRY(max_skl_im = (unsigned char*) malloc(dimx * dimy * dimz * sizeof (unsigned char)));
-    P3D_TRY(lbl_skl_im = (unsigned char*) malloc(dimx * dimy * dimz * sizeof (unsigned char)));
+    P3D_MEM_TRY(dt_im = (unsigned short*) malloc(dimx * dimy * dimz * sizeof (unsigned short)));
+    P3D_MEM_TRY(max_skl_im = (unsigned char*) malloc(dimx * dimy * dimz * sizeof (unsigned char)));
+    P3D_MEM_TRY(lbl_skl_im = (unsigned char*) malloc(dimx * dimy * dimz * sizeof (unsigned char)));
 
 
     // Compute distance transform for further use:
@@ -1848,7 +2483,79 @@ int p3dSkeletonAnalysis(
             mean_sqr = mean_sqr - mean*mean;
 
             wr_log("\tCoordination number: %0.3f +/- %0.3f [-].", mean, sqrt(mean_sqr));
-        }       
+        }
+
+        /*if (out_stats->NodeToNode_Counter > 0) {
+
+            // Compute mean values of tortuosity:
+            glob_mean = 0.0;
+            glob_mean_sqr = 0.0;
+            mean = 0.0;
+            mean_sqr = 0.0;
+            i = 0;
+            j = 0;
+            for (ct = 0; ct < (out_stats->Tort_Counter); ct++) {
+                if (out_stats->Tort_X[ct] > -1.0) {
+                    mean = mean + (double) (out_stats->Tort_X[ct]);
+                    glob_mean += (double) (out_stats->Tort_X[ct]);
+                    mean_sqr += (double) (out_stats->Tort_X[ct] * out_stats->Tort_X[ct]);
+                    glob_mean_sqr += (double) (out_stats->Tort_X[ct] * out_stats->Tort_X[ct]);
+                    i++;
+                    j++;
+                } else {
+                    //wr_log("\tWARNING: Unable to compute a tortuosity path.");
+                }
+            }
+            mean = mean / i;
+            mean_sqr = mean_sqr / i;
+            mean_sqr = sqrt(mean_sqr - mean * mean);
+            wr_log("\tTortuosity in X: %0.3f +/- %0.3f [-] (%d considered paths).", mean, mean_sqr, i);
+
+            mean = 0.0;
+            mean_sqr = 0.0;
+            i = 0;
+            for (ct = 0; ct < (out_stats->Tort_Counter); ct++) {
+                if (out_stats->Tort_Y[ct] > -1.0) {
+                    mean = mean + (double) (out_stats->Tort_Y[ct]);
+                    glob_mean += (double) (out_stats->Tort_Y[ct]);
+                    mean_sqr += (double) (out_stats->Tort_Y[ct] * out_stats->Tort_Y[ct]);
+                    glob_mean_sqr += (double) (out_stats->Tort_Y[ct] * out_stats->Tort_Y[ct]);
+                    i++;
+                    j++;
+                } else {
+                    //wr_log("\tWARNING: Unable to compute a tortuosity path.");
+                }
+            }
+            mean = mean / i;
+            mean_sqr = mean_sqr / i;
+            mean_sqr = sqrt(mean_sqr - mean * mean);
+            wr_log("\tTortuosity in Y: %0.3f +/- %0.3f [-] (%d considered paths).", mean, mean_sqr, i);
+
+
+            mean = 0.0;
+            mean_sqr = 0.0;
+            i = 0;
+            for (ct = 0; ct < (out_stats->Tort_Counter); ct++) {
+                if (out_stats->Tort_Z[ct] > -1.0) {
+                    mean = mean + (double) (out_stats->Tort_Z[ct]);
+                    glob_mean += (double) (out_stats->Tort_Z[ct]);
+                    mean_sqr += (double) (out_stats->Tort_Z[ct] * out_stats->Tort_Z[ct]);
+                    glob_mean_sqr += (double) (out_stats->Tort_Z[ct] * out_stats->Tort_Z[ct]);
+                    i++;
+                    j++;
+                } else {
+                    //wr_log("\tWARNING: Unable to compute a tortuosity path.");
+                }
+            }
+            mean = mean / i;
+            mean_sqr = mean_sqr / i;
+            mean_sqr = sqrt(mean_sqr - mean * mean);
+            glob_mean = glob_mean / j;
+            glob_mean_sqr = glob_mean_sqr / j;
+            glob_mean_sqr = sqrt(glob_mean_sqr - glob_mean * glob_mean);
+            wr_log("\tTortuosity in Z: %0.3f +/- %0.3f [-] (%d considered paths).", mean, mean_sqr, i);
+            wr_log("\tGlobal tortuosity: %0.3f +/- %0.3f [-] (%d considered paths).", glob_mean, glob_mean_sqr, j);
+        }*/
     }
 
 
@@ -1905,12 +2612,8 @@ MEM_ERROR:
 
 
     // Return error code and exit:
-    return P3D_MEM_ERROR;
+    return P3D_ERROR;
+
 }
-
-
-
-
-
 
 
