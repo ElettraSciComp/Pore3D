@@ -209,7 +209,7 @@ MEM_ERROR:
     }
 
     if (filename!=NULL)
-        p3dWriteRaw8_local1(out_im, filename, dimx, dimy,dimz,0,0,NULL,NULL);
+        p3dWriteRaw8_local1(out_im, filename, dimx, dimy, dimz, NULL, NULL);
 
     // Return OK:
     return P3D_ERROR;    
