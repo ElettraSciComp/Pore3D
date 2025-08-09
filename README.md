@@ -1,4 +1,4 @@
-# Pore3D python wrappers
+# PyPore3D for Windows users
 
 This link provides installers and source code of PyPore3D for Windows uers.
 
